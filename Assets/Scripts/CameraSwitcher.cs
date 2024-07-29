@@ -6,10 +6,14 @@ public class CameraSwitcher : MonoBehaviour
     public CinemachineFreeLook freeLookCamera;
     public CinemachineVirtualCamera virtualCamera;
     private bool isFreeLookActive;
+    public Transform player;
+    public Transform target;
+
+    public float lockOnOffsetDistance = 5f;
 
     void Start()
     {
-        // Baþlangýçta hangi kameranýn aktif olduðunu ayarlayýn
+        
         isFreeLookActive = true;
         freeLookCamera.Priority = 10;
         virtualCamera.Priority = 5;
@@ -17,7 +21,7 @@ public class CameraSwitcher : MonoBehaviour
 
     void Update()
     {
-        // F tuþuna basýldýðýnda kamera deðiþtir
+        
         if (Input.GetKeyDown(KeyCode.F))
         {
             SwitchCamera();
@@ -30,6 +34,8 @@ public class CameraSwitcher : MonoBehaviour
         {
             freeLookCamera.Priority = 5;
             virtualCamera.Priority = 10;
+
+            
         }
         else
         {

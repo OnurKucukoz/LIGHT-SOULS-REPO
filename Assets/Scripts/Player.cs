@@ -13,6 +13,9 @@ public class Player : MonoBehaviour
     private float horizontalInput;
     private float verticalInput;
 
+    
+    
+
 
     // Start is called before the first frame update
     void Start()
@@ -21,22 +24,39 @@ public class Player : MonoBehaviour
     }
 
     // Update is called once per frame
-    void FixedUpdate()
+    void LateUpdate()
     {
         PlayerMovement();
-        transform.rotation = Quaternion.LookRotation(Camera.main.transform.forward, Camera.main.transform.up);
+        //transform.rotation = Quaternion.LookRotation(Camera.main.transform.forward);
     }
 
     //ABSTRACTION
     void PlayerMovement()
     {
+        transform.rotation = Camera.main.transform.rotation;
+
         horizontalInput = Input.GetAxis("Horizontal");
         verticalInput = Input.GetAxis("Vertical");
 
-        transform.Translate(horizontalInput * Time.deltaTime * Vector3.right * speed);
-        transform.Translate(verticalInput * Time.deltaTime * Vector3.forward * speed);
+        Vector3 forward = Camera.main.transform.forward;
+        Vector3 right = Camera.main.transform.right;
 
-       
+        forward.y = 0;
+        right.y = 0;
+        forward=forward.normalized;
+        right = right.normalized;
+
+        Vector3 forwardRelativeVerticalInput = verticalInput * forward * Time.deltaTime * speed;
+        Vector3 rightRelativeVerticalInput = horizontalInput * right * Time.deltaTime * speed;
+
+        Vector3 cameraRelativeMovement = forwardRelativeVerticalInput + rightRelativeVerticalInput;
+        transform.Translate(cameraRelativeMovement, Space.World);
+
+
+        //transform.Translate(horizontalInput * Time.deltaTime * Vector3.right * speed);
+        //transform.Translate(verticalInput * Time.deltaTime * Vector3.forward * speed);
+
+
     }
 
     
