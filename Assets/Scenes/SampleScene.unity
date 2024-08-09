@@ -191,6 +191,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Paladin J Nordstrom
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 2de29591b033d7243ae90570246b0a04, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 5ffc250836f56314db0ae577dd7362df, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 2de29591b033d7243ae90570246b0a04, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8670697777106522171, guid: 2de29591b033d7243ae90570246b0a04, type: 3}
       propertyPath: m_LocalScale.y
       value: 0.92759
@@ -215,6 +223,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2de29591b033d7243ae90570246b0a04, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1171889463}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2de29591b033d7243ae90570246b0a04, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1171889465}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2de29591b033d7243ae90570246b0a04, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1171889467}
   m_SourcePrefab: {fileID: 100100000, guid: 2de29591b033d7243ae90570246b0a04, type: 3}
 --- !u!1 &316118789
 GameObject:
@@ -902,6 +916,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   freeLookCamera: {fileID: 1079490176}
   virtualCamera: {fileID: 2048147957}
+  isFreeLookActive: 0
   player: {fileID: 1171889457}
   target: {fileID: 517488024}
   lockOnOffsetDistance: 5
@@ -1293,7 +1308,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -8.31866, y: 0, z: -7.831789}
-  m_LocalScale: {x: 4.9952, y: 4.9952, z: 4.9952}
+  m_LocalScale: {x: 20, y: 20, z: 20}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1473,7 +1488,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 116
   m_CollisionDetection: 0
 --- !u!114 &1171889462
 MonoBehaviour:
@@ -1489,6 +1504,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerRb: {fileID: 1171889460}
   speed: 5
+  verticalSpeed: 5
   rotationSpeed: 10
   isLocked: 0
   target: {fileID: 517488024}
@@ -1514,6 +1530,37 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 203458371695166868, guid: 2de29591b033d7243ae90570246b0a04, type: 3}
+--- !u!114 &1171889465
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171889456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4ecc88d280575f44bddf900823d92c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isFreeLookActive: 0
+--- !u!114 &1171889467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171889456}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a18991ee044c3c84392c9434d37719c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  freeLookCamera: {fileID: 1079490176}
+  virtualCamera: {fileID: 2048147957}
+  isFreeLookActive: 0
+  player: {fileID: 803515696}
+  target: {fileID: 517488024}
+  lockOnOffsetDistance: 5
 --- !u!4 &1326163003 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2042953256698253358, guid: 2de29591b033d7243ae90570246b0a04, type: 3}
@@ -1637,8 +1684,8 @@ MonoBehaviour:
   m_LookaheadTime: 0
   m_LookaheadSmoothing: 0
   m_LookaheadIgnoreY: 0
-  m_HorizontalDamping: 0
-  m_VerticalDamping: 0
+  m_HorizontalDamping: 0.35
+  m_VerticalDamping: 1.3
   m_ScreenX: 0.5
   m_ScreenY: 0.5
   m_DeadZoneWidth: 0

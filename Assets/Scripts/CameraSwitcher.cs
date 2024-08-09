@@ -5,7 +5,7 @@ public class CameraSwitcher : MonoBehaviour
 {
     public CinemachineFreeLook freeLookCamera;
     public CinemachineVirtualCamera virtualCamera;
-    private bool isFreeLookActive;
+    public bool isFreeLookActive;
     public Transform player;
     public Transform target;
 
