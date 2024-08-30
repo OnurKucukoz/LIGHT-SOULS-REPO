@@ -7,10 +7,10 @@ public class AnimationStateController : MonoBehaviour
     CameraSwitcher cameraSwitcher;
     Animator animator;
     public bool isFreeLookActive;
-    
+    //private Player player;
+
     int isWalkingHash;
     int isRunningHash;
-   
 
     int isLockedOnWalkingForwardHash;
     int isLockedOnWalkingBackwardHash;
@@ -22,17 +22,19 @@ public class AnimationStateController : MonoBehaviour
     int isLockedOnRightStrafingHash;
 
     int isDodgingHash;
-    
 
-    // Start is called before the first frame update
+    public bool isDodging = false;
+
+
     void Start()
     {
         cameraSwitcher = GameObject.Find("CameraSwitcher").GetComponent<CameraSwitcher>();
         animator = GetComponent<Animator>();
+        //player = FindObjectOfType<Player>();
 
         isWalkingHash = Animator.StringToHash("isWalking");
         isRunningHash = Animator.StringToHash("isRunning");
-        
+
 
         isLockedOnWalkingForwardHash = Animator.StringToHash("isLockedOnWalkingForward");
         isLockedOnWalkingBackwardHash = Animator.StringToHash("isLockedOnWalkingBackward");
@@ -47,7 +49,7 @@ public class AnimationStateController : MonoBehaviour
         isDodgingHash = Animator.StringToHash("isDodging");
     }
 
-    // Update is called once per frame
+    
     void Update()
     {
         isFreeLookActive = cameraSwitcher.isFreeLookActive;
@@ -64,25 +66,20 @@ public class AnimationStateController : MonoBehaviour
         bool isLockedOnLeftStrafing = animator.GetBool(isLockedOnLeftStrafingHash);
         bool isLockedOnRightStrafing = animator.GetBool(isLockedOnRightStrafingHash);
 
-        bool isDodging = animator.GetBool(isDodgingHash);
-
-
-
         bool shiftPressed = Input.GetKey("left shift");
         bool forwardPressed = Input.GetKey("w");
         bool leftPressed = Input.GetKey("a");
         bool rightPressed = Input.GetKey("d");
         bool backPressed = Input.GetKey("s");
         bool spacePressed = Input.GetKeyDown("space");
-        
 
         //start freelook walking
-        if(isFreeLookActive && !isWalking && (forwardPressed || rightPressed || leftPressed || backPressed))
+        if (isFreeLookActive && !spacePressed && !isWalking && (forwardPressed || rightPressed || leftPressed || backPressed))
         {
             animator.SetBool(isWalkingHash, true);
         }
         //stop freelook walking
-        if (!isFreeLookActive || (isWalking && !(forwardPressed || rightPressed || leftPressed || backPressed)))
+        if (!isFreeLookActive || spacePressed || (isWalking && !(forwardPressed || rightPressed || leftPressed || backPressed)))
         {
             animator.SetBool(isWalkingHash, false);
         }
@@ -99,162 +96,208 @@ public class AnimationStateController : MonoBehaviour
             animator.SetBool(isRunningHash, false);
         }
 
-        //start freelook rolling
-        if(spacePressed)
+        //start freelook rolling 
+        if (isFreeLookActive && spacePressed && !isDodging)
         {
-            animator.SetBool(isDodgingHash, true);
+            isDodging = true;
+           // player.rotationSpeed = 5f;      
+            animator.SetTrigger("isDodging");
+        }
+        if (animator.GetCurrentAnimatorStateInfo(0).IsTag("Dodging") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        {
+            //player.rotationSpeed = 10f;
+            isDodging = false;
         }
 
+        //start locked on forward rolling 
+        if (!isFreeLookActive && spacePressed && !isDodging && forwardPressed && !rightPressed && !leftPressed)
+        {
+            isDodging = true;
+            animator.SetTrigger("isDodging");
+        }
+        if (animator.GetCurrentAnimatorStateInfo(0).IsTag("Dodging") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        {
+            isDodging = false;
+        }
+
+        //start locked on right rolling
+        if (!isFreeLookActive && spacePressed && !isDodging && rightPressed &&!backPressed && !forwardPressed)
+        {
+            isDodging = true;
+            animator.SetTrigger("isDodgingRight");
+        }
+        if (animator.GetCurrentAnimatorStateInfo(0).IsTag("DodgingRight") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        {
+            isDodging = false;
+        }
+
+        //start locked on left rolling
+        if (!isFreeLookActive && spacePressed && !isDodging && leftPressed && !backPressed && !forwardPressed)
+        {
+            isDodging = true;
+            animator.SetTrigger("isDodgingLeft");
+        }
+        if (animator.GetCurrentAnimatorStateInfo(0).IsTag("DodgingLeft") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        {
+            isDodging = false;
+        }
+
+        //start locked on backward rolling
+        if (!isFreeLookActive && spacePressed && !isDodging && backPressed && !rightPressed && !leftPressed)
+        {
+            isDodging = true;
+            animator.SetTrigger("isDodgingBackward");
+        }
+        if (animator.GetCurrentAnimatorStateInfo(0).IsTag("DodgingBackward") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        {
+            isDodging = false; 
+        }
+
+        //start locked on backward right diagonal rolling
+        if (!isFreeLookActive && spacePressed && !isDodging && (backPressed && rightPressed))
+        {
+            isDodging = true;
+            animator.SetTrigger("isDodgingBackwardRightDiagonal");
+        }
+        if (animator.GetCurrentAnimatorStateInfo(0).IsTag("DodgingBackwardRightDiagonal") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        {
+            isDodging = false; 
+        }
+
+        //start locked on backward left diagonal rolling
+        if (!isFreeLookActive && spacePressed && !isDodging && (backPressed && leftPressed))
+        {
+            isDodging = true;
+            animator.SetTrigger("isDodgingBackwardLeftDiagonal");
+        }
+        if (animator.GetCurrentAnimatorStateInfo(0).IsTag("DodgingBackwardLeftDiagonal") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        {
+            isDodging = false; 
+        }
+
+        //start locked on left forward diagonal rolling
+        if (!isFreeLookActive && spacePressed && !isDodging && (leftPressed && forwardPressed))
+        {
+            isDodging = true;
+            animator.SetTrigger("isDodgingLeftDiagonal");
+        }
+        if (animator.GetCurrentAnimatorStateInfo(0).IsTag("DodgingLeftDiagonal") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        {
+            isDodging = false;
+        }
+
+        //start locked on right forward diagonal rolling
+        if (!isFreeLookActive && spacePressed && !isDodging && rightPressed && forwardPressed)
+        {
+            isDodging = true;
+            animator.SetTrigger("isDodgingRightDiagonal");
+        }
+        if (animator.GetCurrentAnimatorStateInfo(0).IsTag("DodgingRightDiagonal") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
+        {
+            isDodging = false;
+        }
 
         //start locked on walk forward
-        if (!isFreeLookActive && !isLockedOnWalkingForward && forwardPressed ) 
+        if (!isFreeLookActive && !isLockedOnWalkingForward && forwardPressed)
         {
             animator.SetBool(isLockedOnWalkingForwardHash, true);
         }
 
         //stop locked on walk forward
-        if(isFreeLookActive || (isLockedOnWalkingForward && !forwardPressed))
+        if (isFreeLookActive || (isLockedOnWalkingForward && !forwardPressed))
         {
             animator.SetBool(isLockedOnWalkingForwardHash, false);
-        
         }
-
 
         //start locked on walk backward
-        if(!isFreeLookActive && !isLockedOnWalkingBackward && backPressed)
+        if (!isFreeLookActive && !isLockedOnWalkingBackward && backPressed)
         {
             animator.SetBool(isLockedOnWalkingBackwardHash, true);
-        
         }
+
         //stop locked on walk backward
-        if(isFreeLookActive || (isLockedOnWalkingBackward && !backPressed))
+        if (isFreeLookActive || (isLockedOnWalkingBackward && !backPressed))
         {
             animator.SetBool(isLockedOnWalkingBackwardHash, false);
-        
         }
 
 
         //start locked on right strafe walking
-        if(!isFreeLookActive && !isLockedOnWalkingRight && rightPressed)
+        if (!isFreeLookActive && !isLockedOnWalkingRight && rightPressed)
         {
             animator.SetBool(isLockedOnWalkingRightHash, true);
-        
         }
+
         //stop locked on right strafe walking
-        if(isFreeLookActive || (isLockedOnWalkingRight && !rightPressed))
+        if (isFreeLookActive || (isLockedOnWalkingRight && !rightPressed))
         {
             animator.SetBool(isLockedOnWalkingRightHash, false);
-        
         }
 
 
         //start locked on left strafe walking
-        if(!isFreeLookActive && !isLockedOnWalkingLeft && leftPressed)
+        if (!isFreeLookActive && !isLockedOnWalkingLeft && leftPressed)
         {
             animator.SetBool(isLockedOnWalkingLeftHash, true);
-
         }
+
         //stop locked on left strafe walking
-        if(isFreeLookActive || (isLockedOnWalkingLeft && !leftPressed))
+        if (isFreeLookActive || (isLockedOnWalkingLeft && !leftPressed))
         {
             animator.SetBool(isLockedOnWalkingLeftHash, false);
-
         }
 
 
         //start locked on forward running -onur sana bir not gecmisteki onurdan. startlarda hepsi && li olacak. Stoplarda isfreelook||(....&&!...)
-        if(!isFreeLookActive && !isLockedOnRunningForward && forwardPressed && shiftPressed)
+        if (!isFreeLookActive && !isLockedOnRunningForward && forwardPressed && shiftPressed)
         {
             animator.SetBool(isLockedOnRunningForwardHash, true);
-        
         }
+
         //stop locked on forward running 
-        if(isFreeLookActive || (isLockedOnRunningForward && (!forwardPressed || !shiftPressed)))
+        if (isFreeLookActive || (isLockedOnRunningForward && (!forwardPressed || !shiftPressed)))
         {
             animator.SetBool(isLockedOnRunningForwardHash, false);
-
         }
 
 
         //start locked on backward running 
-        if(!isFreeLookActive && !isLockedOnRunningBackward && backPressed && shiftPressed)
+        if (!isFreeLookActive && !isLockedOnRunningBackward && backPressed && shiftPressed)
         {
             animator.SetBool(isLockedOnRunningBackwardHash, true);
-
         }
+
         //stop locked on backward running 
-        if(isFreeLookActive || (isLockedOnRunningBackward && (!backPressed || !shiftPressed)))
+        if (isFreeLookActive || (isLockedOnRunningBackward && (!backPressed || !shiftPressed)))
         {
             animator.SetBool(isLockedOnRunningBackwardHash, false);
-
         }
 
 
         //start locked on right strafing
-        if(!isFreeLookActive && !isLockedOnRightStrafing && rightPressed && shiftPressed)
+        if (!isFreeLookActive && !isLockedOnRightStrafing && rightPressed && shiftPressed)
         {
             animator.SetBool(isLockedOnRightStrafingHash, true);
-
-
         }
-        //stop locked on right strafing
-        if(isFreeLookActive || (isLockedOnRightStrafing && (!rightPressed || !shiftPressed)))
-        {
 
+        //stop locked on right strafing
+        if (isFreeLookActive || (isLockedOnRightStrafing && (!rightPressed || !shiftPressed)))
+        {
             animator.SetBool(isLockedOnRightStrafingHash, false);
         }
 
 
         //start locked on left strafing
-        if(!isFreeLookActive && !isLockedOnLeftStrafing && leftPressed && shiftPressed)
+        if (!isFreeLookActive && !isLockedOnLeftStrafing && leftPressed && shiftPressed)
         {
             animator.SetBool(isLockedOnLeftStrafingHash, true);
-
         }
+
         //stop locked on left strafing
-        if(isFreeLookActive || (isLockedOnLeftStrafing && (!leftPressed || !shiftPressed)))
+        if (isFreeLookActive || (isLockedOnLeftStrafing && (!leftPressed || !shiftPressed)))
         {
-
             animator.SetBool(isLockedOnLeftStrafingHash, false);
-
         }
-
-
-        //start locked on rolling
-        if(!isFreeLookActive)
-        {
-
-        
-        }
-
-
-
-
-
 
     }
 }
-       /* if (isFreeLookActive && shiftPressed && !isWalking && (forwardPressed || rightPressed || leftPressed || backPressed))
-        {
-            animator.SetBool(isRunningHash, true);
-        }*/
-
-       /* if (!isWalking && forwardPressed)
-        {
-            animator.SetBool(isWalkingHash, true);
-        }*/
-
-        /*if(isWalking && !forwardPressed)
-        {
-            animator.SetBool(isWalkingHash, false);
-        }*/
-
-       /* if (!isRunning && (forwardPressed && shiftPressed))
-        {
-            animator.SetBool(isRunningHash, true);
-        }
-
-        if (isRunning && (!forwardPressed || !shiftPressed))
-        {
-            animator.SetBool(isRunningHash, false);
-        }*/

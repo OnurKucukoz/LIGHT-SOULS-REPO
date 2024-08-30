@@ -4,25 +4,33 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    [SerializeField] AnimationCurve dodgeCurve;
+    bool isDodging;
+    float dodgeTimer;
 
-
+    //Dodge upwards
     [SerializeField] private Rigidbody playerRb;
     [SerializeField] private float speed = 5.0f;
     [SerializeField] private float verticalSpeed = 5.0f;
 
-
     private float horizontalInput;
     private float verticalInput;
-
-
     public float rotationSpeed = 10f;
     public bool isLocked = false;
 
+    Animator animator;
+    Vector3 direction;
 
-    // Start is called before the first frame update
+    public Transform target;
+
+    
     void Start()
     {
         isLocked = false;
+        animator = GetComponent<Animator>();
+
+        Keyframe dodge_lastFrame = dodgeCurve[dodgeCurve.length - 1];
+        dodgeTimer = dodge_lastFrame.time;
     }
 
     // Update is called once per frame
@@ -30,6 +38,7 @@ public class Player : MonoBehaviour
     {
         SwitchLockState();
     }
+
 
     //ABSTRACTION
     void FreelookPlayerMovement()
@@ -50,20 +59,18 @@ public class Player : MonoBehaviour
 
         Vector3 cameraRelativeMovement = forwardRelativeVerticalInput + rightRelativeVerticalInput;
         transform.Translate(cameraRelativeMovement, Space.World);
+        
+        direction = (forward * verticalInput + right * horizontalInput).normalized;
 
-        Vector3 direction = (forward * verticalInput + right * horizontalInput).normalized;
-
-        if(direction != Vector3.zero)
+        if (direction != Vector3.zero)
         {
+            animator.SetBool("isWalking", true);
             Quaternion toRotation = Quaternion.LookRotation(direction, Vector3.up);
             transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
         }
-
-        
-
-
     }
-    public Transform target;
+
+
     void LockedOnPlayerMovement()
     {
         horizontalInput = Input.GetAxis("Horizontal");
@@ -80,18 +87,14 @@ public class Player : MonoBehaviour
         Vector3 forwardRelativeVerticalInput = verticalInput * forward * Time.deltaTime * verticalSpeed;
         Vector3 rightRelativeVerticalInput = horizontalInput * right * Time.deltaTime * speed;
 
-        if(rightRelativeVerticalInput.magnitude != 0)
+        if (rightRelativeVerticalInput.magnitude != 0)
         {
             verticalSpeed = 3f;
         }
         else { verticalSpeed = 5f; }
 
-
-
         Vector3 cameraRelativeMovement = forwardRelativeVerticalInput + rightRelativeVerticalInput;
         transform.Translate(cameraRelativeMovement, Space.World);
-
-
 
         Vector3 directionToTarget = target.position - transform.position;
         directionToTarget.y = 0;
@@ -101,7 +104,6 @@ public class Player : MonoBehaviour
             Quaternion toRotation = Quaternion.LookRotation(directionToTarget);
             transform.rotation = Quaternion.Lerp(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
         }
-
     }
 
     void SwitchLockState()
@@ -123,6 +125,5 @@ public class Player : MonoBehaviour
         }
 
     }
-
 
 }

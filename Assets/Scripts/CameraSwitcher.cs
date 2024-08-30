@@ -13,7 +13,7 @@ public class CameraSwitcher : MonoBehaviour
 
     void Start()
     {
-        
+
         isFreeLookActive = true;
         freeLookCamera.Priority = 10;
         virtualCamera.Priority = 5;
@@ -21,7 +21,7 @@ public class CameraSwitcher : MonoBehaviour
 
     void Update()
     {
-        
+
         if (Input.GetKeyDown(KeyCode.F))
         {
             SwitchCamera();
@@ -35,7 +35,7 @@ public class CameraSwitcher : MonoBehaviour
             freeLookCamera.Priority = 5;
             virtualCamera.Priority = 10;
 
-            
+
         }
         else
         {
