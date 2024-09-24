@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AnimationStateController : MonoBehaviour
 {
+    Player player;
     CameraSwitcher cameraSwitcher;
     Animator animator;
     public bool isFreeLookActive;
@@ -33,7 +34,7 @@ public class AnimationStateController : MonoBehaviour
     {
         cameraSwitcher = GameObject.Find("CameraSwitcher").GetComponent<CameraSwitcher>();
         animator = GetComponent<Animator>();
-        //player = FindObjectOfType<Player>();
+        player = FindObjectOfType<Player>();
 
         isWalkingHash = Animator.StringToHash("isWalking");
         isRunningHash = Animator.StringToHash("isRunning");
@@ -97,7 +98,7 @@ public class AnimationStateController : MonoBehaviour
             if (cooldownTimer <= 0)
             {
                 cooldownTimer = 1.30f;
-                FreeLookLightAttack();
+               FreeLookLightAttack();
             }
         }
 
@@ -301,11 +302,11 @@ public class AnimationStateController : MonoBehaviour
             {
                 isDodging = false;
                 animator.SetTrigger("isDodging");
-                Debug.Log("xxx");
+                
             }
             if (animator.GetCurrentAnimatorStateInfo(0).IsTag("Dodging") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
             {
-                Debug.Log("dddd");
+                
                 isDodging = true;
             }
         }
@@ -423,7 +424,9 @@ public class AnimationStateController : MonoBehaviour
         //start freelook running
         if (isFreeLookActive && !isRunning && ((forwardPressed || rightPressed || leftPressed || backPressed) && shiftPressed))
         {
+            
             animator.SetBool(isRunningHash, true);
+            
         }
 
         //stop freelook running

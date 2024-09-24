@@ -1,18 +1,22 @@
-using System.Collections;
+/*using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Warrior : MonoBehaviour
+public abstract class Warrior: MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public int CurrentHealth { get; protected set; }
+    public int MaxHealth { get; protected set; }
 
-    // Update is called once per frame
-    void Update()
+    // Abstract methods
+    public abstract void GiveDamage(Warrior enemy);
+    public abstract void TakeDamage(int damage);
+    public abstract void Die();
+
+    protected Warrior(int maxHealth)
     {
-        
+        MaxHealth = maxHealth;
+        CurrentHealth = maxHealth;
     }
 }
+
+*/
