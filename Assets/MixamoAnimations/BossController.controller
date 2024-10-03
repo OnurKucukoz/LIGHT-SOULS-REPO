@@ -20,7 +20,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -203655887218126122, guid: c26800630a952c649a11b9263f3ada67, type: 3}
+  m_Motion: {fileID: 7400000, guid: 06132878d7b4c2e48801205f744ab10f, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -47,7 +47,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -203655887218126122, guid: 2ddaacbd02749cb4da4bb3edabd83290, type: 3}
+  m_Motion: {fileID: 7400000, guid: 47caa5dddf57b5345a1e2515110cd7d7, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -274,7 +274,7 @@ AnimatorStateMachine:
     m_Position: {x: 760, y: 360, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4344553545048540944}
-    m_Position: {x: 760, y: 610, z: 0}
+    m_Position: {x: 760, y: 590, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -7822815764038448811}
     m_Position: {x: 760, y: 180, z: 0}
@@ -327,7 +327,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: -203655887218126122, guid: 85ce4e70d3cba3b4a98891a4ed1d3a47, type: 3}
+  m_Motion: {fileID: 7400000, guid: eefbb6693497e0742b5445a765154251, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -450,6 +450,12 @@ AnimatorController:
     m_Controller: {fileID: 9100000}
   - m_Name: isEnemyWalkingBack
     m_Type: 4
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
+  - m_Name: isEnemyDeadAgain
+    m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
@@ -806,9 +812,9 @@ AnimatorStateTransition:
   m_Mute: 0
   m_IsExit: 0
   serializedVersion: 3
-  m_TransitionDuration: 0.25
+  m_TransitionDuration: 1
   m_TransitionOffset: 0
-  m_ExitTime: 0.75
+  m_ExitTime: 1
   m_HasExitTime: 0
   m_HasFixedDuration: 1
   m_InterruptionSource: 0

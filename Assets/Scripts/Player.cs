@@ -1,14 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
 
-    bool isDodging;
-    float dodgeTimer;
-
-    //Dodge upwards
     [SerializeField] private Rigidbody playerRb;
     public float speed = 2f;
 
@@ -19,16 +16,22 @@ public class Player : MonoBehaviour
     public bool isLocked = false;
 
     Animator animator;
+
     Vector3 direction;
 
     public Transform target;
-
+    public AnimationStateController animationStateController;
+    Image enemyFocusPoint;
 
     void Start()
     {
-        isLocked = false;
         animator = GetComponent<Animator>();
 
+        isLocked = false;
+        
+        animationStateController =GameObject.Find("Player").GetComponent<AnimationStateController>();
+
+        //enemyFocusPoint = GameObject.Find("Enemy Focus Point").GetComponent<Image>();
 
     }
 
@@ -40,6 +43,7 @@ public class Player : MonoBehaviour
 
     bool isLightClicked = false;
     bool isHeavyClicked = false;
+    bool isHealClicked = false;
     
 
     //ABSTRACTION
@@ -58,6 +62,11 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown("space"))
         {
             StartCoroutine(StopPlayerMovementDodge());
+        }
+
+        if(Input.GetKeyDown("r"))
+        {
+            StartCoroutine(StopPlayerMovementHeal());
         }
         
         FreeLookRun();
@@ -93,24 +102,31 @@ public class Player : MonoBehaviour
 
     void FreeLookRun()
     {
-        if (Input.GetKey("left shift") && !isLightClicked && !isHeavyClicked)
+        if (Input.GetKey("left shift") && !isLightClicked && !isHeavyClicked && !isHealClicked && (animationStateController.stamina > 12))
         {
-            speed = 7f;
+            animationStateController.stamina -= 20 * Time.deltaTime;
+            speed = 5f;
         }
-        else if(!Input.GetKey("left shift") && !isLightClicked && !isHeavyClicked)
+        else if(!Input.GetKey("left shift") && !isLightClicked && !isHeavyClicked && !isHealClicked && (animationStateController.stamina > 11))
         {
+            
             speed = 2f;
         }
-        
+        else if (animationStateController.stamina <= 11)
+        {
+            speed = 1f; 
+        }
+
     }
 
     void LockedOnRun()
     {
-        if (Input.GetKey("left shift") && !isLightClicked && !isHeavyClicked)
+        if (Input.GetKey("left shift") && !isLightClicked && !isHeavyClicked && !isHealClicked && (animationStateController.stamina > 3))
         {
-            speed = 5f;
+            animationStateController.stamina -= 12 * Time.deltaTime;
+            speed = 4f;
         }
-        else if (!Input.GetKey("left shift") && !isLightClicked && !isHeavyClicked)
+        else if (!Input.GetKey("left shift") && !isLightClicked && !isHeavyClicked && !isHealClicked)
         {
             speed = 2f;
         }
@@ -119,15 +135,17 @@ public class Player : MonoBehaviour
 
     IEnumerator StopPlayerMovementLight()
     {
+        
+            isLightClicked = true;
+            speed = 0f;
+            rotationSpeed = 1.20f;
+            yield return new WaitForSeconds(1.44f);
 
-        isLightClicked = true;
-        speed = 0f;
-        rotationSpeed = 1.20f;
-        yield return new WaitForSeconds(1.44f);
-
-        speed = 2f;
-        rotationSpeed = 10f;
-        isLightClicked = false;
+            speed = 2f;
+            rotationSpeed = 10f;
+            isLightClicked = false;
+        
+        
 
     }
 
@@ -144,6 +162,21 @@ public class Player : MonoBehaviour
         rotationSpeed = 10f;
         isHeavyClicked = false;
 
+    }
+
+    IEnumerator StopPlayerMovementHeal()
+    {
+    if (animationStateController.medicineCount > 0)
+    {
+        isHealClicked = true;
+        speed = 0f;
+        rotationSpeed = 1.20f;
+        yield return new WaitForSeconds(2.65f);
+
+        speed = 2f;
+        rotationSpeed = 10f;
+        isHealClicked = false;
+    }
     }
 
 
@@ -180,6 +213,11 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown("space"))
         {
             StartCoroutine(StopPlayerMovementDodge());
+        }
+
+        if (Input.GetKeyDown("r"))
+        {
+            StartCoroutine(StopPlayerMovementHeal());
         }
 
         LockedOnRun();
@@ -223,10 +261,16 @@ public class Player : MonoBehaviour
         // Call the appropriate movement method based on isLocked state
         if (isLocked)
         {
+            //enemyFocusPoint.enabled = true;
+
+            //turn on knob
             LockedOnPlayerMovement();
         }
         else
         {
+            //enemyFocusPoint.enabled = false;
+
+            //turn off knob
             FreelookPlayerMovement();
         }
 

@@ -1,14 +1,17 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AnimationStateController : MonoBehaviour
 {
     Player player;
     CameraSwitcher cameraSwitcher;
     Animator animator;
+    MeshCollider meshCollider;
     public bool isFreeLookActive;
-    //private Player player;
 
     int isWalkingHash;
     int isRunningHash;
@@ -30,8 +33,38 @@ public class AnimationStateController : MonoBehaviour
     public bool isDodging;
     public float cooldownTimer = 0;
 
+    public float comboTimer = 0;
+
+    private bool isAttacking = false;
+    public int comboStep = 0;
+
+    public bool canCombo;
+    public bool canHeavy;
+    public bool canLight;
+    public bool canHeal;
+
+    public float numOfClicks;
+    public int medicineCount = 3;
+
+    public float stamina;
+    private float staminaCostLightAttack = 8;
+    private float staminaCostHeavyAttack = 14;
+    private float staminaCostComboAttack = 5;
+    private float staminaCostDodge = 13;
+    private float staminaCostRun = 3;
+    public float maxStamina = 100f;
+    public bool isStaminaCostingNow;
+
+
+   // public TextMeshProUGUI medicineCountUI;
+
+    public TextMeshProUGUI medicineCountText;
     void Start()
     {
+        meshCollider = GameObject.Find("Player").GetComponent<MeshCollider>();
+
+        stamina = maxStamina;
+        comboStep = 0;
         cameraSwitcher = GameObject.Find("CameraSwitcher").GetComponent<CameraSwitcher>();
         animator = GetComponent<Animator>();
         player = FindObjectOfType<Player>();
@@ -54,11 +87,85 @@ public class AnimationStateController : MonoBehaviour
 
         isAttackingLight = Animator.StringToHash("isAttackingLight");
         isAttackingHeavy = Animator.StringToHash("isAttackingHeavy");
+        canCombo = false;
+    }
+
+    IEnumerator StaminaCostingNow()
+    {
+        if (isStaminaCostingNow) yield break; 
+
+        isStaminaCostingNow = true;
+        yield return new WaitForSeconds(5);
+        isStaminaCostingNow = false;
+    }
+
+    public void EnableMeshCollider()
+    {
+        meshCollider.enabled = true;
+    }
+
+    public void DisableMeshCollider()
+    {
+        meshCollider.enabled = false;
+    }
+
+    public void EnableCombo()
+    {
+        canCombo = true;
+        
+    }
+
+    public void DisableCombo()
+    {
+        canCombo = false;
+        
+    }
+
+    public void EnableHeavy()
+    {
+        canHeavy = true;
+        
+    }
+
+    public void DisableHeavy()
+    {
+        canHeavy = false;
+        
+    }
+
+    public void EnableLight()
+    {
+        canLight = true;
+        
+    }
+
+    public void DisableLight()
+    {
+        canLight = false;
+       
+    }
+
+    public void EnableHeal()
+    {
+        canHeal = true;
+    }
+
+    public void DisableHeal()
+    {
+        canHeal = false;
+    }
+
+
+
+    void UpdateMedicineCount()
+    {
+        medicineCountText.text = (medicineCount-1).ToString();
     }
 
 
     void Update()
     {
+        
         isFreeLookActive = cameraSwitcher.isFreeLookActive;
         bool isWalking = animator.GetBool(isWalkingHash);
         bool isRunning = animator.GetBool(isRunningHash);
@@ -79,12 +186,17 @@ public class AnimationStateController : MonoBehaviour
         bool rightPressed = Input.GetKey("d");
         bool backPressed = Input.GetKey("s");
         bool spacePressed = Input.GetKeyDown("space");
+        bool rPressed = Input.GetKey("r");
 
         bool leftMouseClicked = Input.GetMouseButtonDown(0);
-        bool rightMouseClicked = Input.GetMouseButton(1);
+        bool rightMouseClicked = Input.GetMouseButtonDown(1);
 
-        bool isLightAttacking = false;
-        bool isHeavyAttacking = false;
+
+        
+        if(stamina <= 100 && !isStaminaCostingNow)
+        {
+           stamina +=  10 * Time.deltaTime;
+        }
 
 
         if (cooldownTimer > 0)
@@ -92,57 +204,94 @@ public class AnimationStateController : MonoBehaviour
             cooldownTimer -= Time.deltaTime;
         }
 
-        if (isFreeLookActive && leftMouseClicked && !isLightAttacking)
+        if (comboTimer > 0)
         {
-
-            if (cooldownTimer <= 0)
-            {
-                cooldownTimer = 1.30f;
-               FreeLookLightAttack();
-            }
+            comboTimer -= Time.deltaTime;
         }
 
-        if (!isFreeLookActive && leftMouseClicked && !isLightAttacking)
+        if (numOfClicks >= 10)
         {
-            if (cooldownTimer <= 0)
-            {
-                cooldownTimer = 1.30f;
-                LockedOnLightAttack();
-            }
+            cooldownTimer = -0.3f;
+            numOfClicks = 0;
         }
 
-        if (isFreeLookActive && rightMouseClicked && !isHeavyAttacking)
+        if (rPressed)
         {
-            if (cooldownTimer <= 0)
+            if (cooldownTimer <= 0 && medicineCount > 0 && !canHeavy && !canLight)
             {
-                cooldownTimer = 1.44f;
+                
+                cooldownTimer = 3.05f;
+                UseMedicineAnimation();
+                UpdateMedicineCount();
+                
+            }
+        }
+       
+
+        if (leftMouseClicked)
+        {
+            numOfClicks++;
+            if (cooldownTimer <= 0 && !isAttacking && !canHeavy && !canHeal && (stamina > staminaCostLightAttack))
+            {
+                stamina -= 10;
+                StartCoroutine(StaminaCostingNow());
+                cooldownTimer = 1.30f;
+                FreeLookLightAttack();
+
+            }
+
+        }
+
+        if (rightMouseClicked)
+        {
+            numOfClicks++;
+            //isHeavyAttacking = true;
+            if (cooldownTimer <= 0 && !canLight && !canHeal && (stamina > staminaCostHeavyAttack))
+            {
+                stamina -= 20;
+                StartCoroutine(StaminaCostingNow());
+                cooldownTimer = 2.25f;
                 FreeLookHeavyAttack();
+
+
             }
+            // isHeavyAttacking = false;
         }
 
 
-        if (!isFreeLookActive && rightMouseClicked && !isHeavyAttacking)
+
+        if (canCombo && leftMouseClicked )
         {
-            if (cooldownTimer <= 0)
+
+            if (!canHeavy && !canHeal && (stamina > 8))
             {
-                cooldownTimer = 1.44f;
-                LockedOnHeavyAttack();
+                stamina -= 5;
+                StartCoroutine(StaminaCostingNow());
+                cooldownTimer = 1.30f;
+                LightAttackComboTwo();
+                DisableCombo();
+
             }
         }
+
 
         if (isFreeLookActive && spacePressed && !isDodging)
         {
-            if(cooldownTimer <= 0)
+            if (cooldownTimer <= 0 && (stamina > 10))
             {
-                cooldownTimer =1.37f;
+                stamina -= 7;
+                StartCoroutine(StaminaCostingNow());
+                cooldownTimer = 1.37f;
                 FreeLookDodge();
             }
         }
 
         if (!isFreeLookActive && spacePressed && !isDodging && forwardPressed && !rightPressed && !leftPressed)
         {
-            if (cooldownTimer <= 0)
+            if (cooldownTimer <= 0 && (stamina > 10))
             {
+                stamina -= 7;
+                StartCoroutine(StaminaCostingNow());
                 cooldownTimer = 1.37f;
                 LockedOnForwardDodge();
             }
@@ -151,8 +300,10 @@ public class AnimationStateController : MonoBehaviour
 
         if (!isFreeLookActive && spacePressed && !isDodging && leftPressed && !backPressed && !forwardPressed)
         {
-            if (cooldownTimer <= 0)
+            if (cooldownTimer <= 0 && (stamina > 10))
             {
+                stamina -= 7;
+                StartCoroutine(StaminaCostingNow());
                 cooldownTimer = 1.37f;
                 LockedOnLeftDodge();
             }
@@ -160,8 +311,10 @@ public class AnimationStateController : MonoBehaviour
 
         if (!isFreeLookActive && spacePressed && !isDodging && rightPressed && !backPressed && !forwardPressed)
         {
-            if (cooldownTimer <= 0)
+            if (cooldownTimer <= 0 && (stamina > 10))
             {
+                stamina -= 7;
+                StartCoroutine(StaminaCostingNow());
                 cooldownTimer = 1.37f;
                 LockedOnRightDodge();
             }
@@ -169,38 +322,46 @@ public class AnimationStateController : MonoBehaviour
 
         if (!isFreeLookActive && spacePressed && !isDodging && backPressed && !rightPressed && !leftPressed)
         {
-            if (cooldownTimer <= 0)
+            if (cooldownTimer <= 0 && (stamina > 10))
             {
+                stamina -= 7;
+                StartCoroutine(StaminaCostingNow());
                 cooldownTimer = 1.37f;
                 LockedOnBackwardDodge();
             }
         }
 
-        
+
         if (!isFreeLookActive && spacePressed && !isDodging && (backPressed && rightPressed))
         {
-            if (cooldownTimer <= 0)
+            if (cooldownTimer <= 0 && (stamina > 10))
             {
+                stamina -= 7;
+                StartCoroutine(StaminaCostingNow());
                 cooldownTimer = 1.37f;
                 LockedOnBackwardRightDiagonalRolling();
             }
         }
-        
+
 
         if (!isFreeLookActive && spacePressed && !isDodging && (backPressed && leftPressed))
         {
-            if (cooldownTimer <= 0)
+            if (cooldownTimer <= 0 && (stamina > 10))
             {
+                stamina -= 7;
+                StartCoroutine(StaminaCostingNow());
                 cooldownTimer = 1.37f;
                 LockedOnBackwardLeftDiagonalRolling();
             }
         }
 
-      
+
         if (!isFreeLookActive && spacePressed && !isDodging && (leftPressed && forwardPressed))
         {
-            if (cooldownTimer <= 0)
+            if (cooldownTimer <= 0 && (stamina > 10))
             {
+                stamina -= 7;
+                StartCoroutine(StaminaCostingNow());
                 cooldownTimer = 1.37f;
                 LockedOnForwardLeftDiagonalRolling();
             }
@@ -208,91 +369,26 @@ public class AnimationStateController : MonoBehaviour
 
         if (!isFreeLookActive && spacePressed && !isDodging && rightPressed && forwardPressed)
         {
-            if (cooldownTimer <= 0)
+            if (cooldownTimer <= 0 && (stamina > 10))
             {
+                stamina -= 7;
+                StartCoroutine(StaminaCostingNow());
                 cooldownTimer = 1.37f;
                 LockedOnForwardRightDiagonalRolling();
             }
         }
 
 
-        void FreeLookLightAttack()
-        {
-            // start freelook light attack
-            if (isFreeLookActive && leftMouseClicked && !isLightAttacking)
-            {
-                isLightAttacking = true;
-                animator.SetTrigger("isAttackingLight");
-
-            }
-            if (animator.GetCurrentAnimatorStateInfo(0).IsTag("AttackingLight") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-            {
-                isLightAttacking = false;
-            }
-        }
-
-        void LockedOnLightAttack()
-        {
-            // start locked on light attack
-            if (!isFreeLookActive && leftMouseClicked && !isLightAttacking)
-            {
-                isLightAttacking = true;
-                animator.SetTrigger("isAttackingLight");
-            }
-            if (animator.GetCurrentAnimatorStateInfo(0).IsTag("AttackingLight") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-            {
-                isLightAttacking = false;
-            }
-        }
-
-        void FreeLookHeavyAttack()
-        {
-            // start freelook heavy attack
-            if (isFreeLookActive && rightMouseClicked && !isHeavyAttacking)
-            {
-                isHeavyAttacking = true;
-                animator.SetTrigger("isAttackingHeavy");
-
-            }
-            if (animator.GetCurrentAnimatorStateInfo(0).IsTag("AttackingHeavy") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-            {
-                isHeavyAttacking = false;
-            }
-        }
-
-        void LockedOnHeavyAttack()
-        {
-            // start locked on heavy attack
-            if (!isFreeLookActive && rightMouseClicked && !isHeavyAttacking)
-            {
-                isHeavyAttacking = true;
-                animator.SetTrigger("isAttackingHeavy");
-            }
-            if (animator.GetCurrentAnimatorStateInfo(0).IsTag("AttackingHeavy") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-            {
-                isHeavyAttacking = false;
-            }
-        }
 
         void FreeLookDodge()
         {
             //start freelook rolling 
-            if (isFreeLookActive && spacePressed && !isDodging)
-            {
-                
+           
                 animator.SetTrigger("isDodging");
-                // player.rotationSpeed = 5f;      
-                Debug.Log("is dodging true");
-                isDodging = false;
                 
-            }
-            if (animator.GetCurrentAnimatorStateInfo(0).IsTag("Dodging") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-            {
-                //player.rotationSpeed = 10f;
+                isDodging = false;
 
-                Debug.Log("is dodging false");
-                isDodging = true;
-            }
+           
         }
 
         void LockedOnForwardDodge()
@@ -302,13 +398,9 @@ public class AnimationStateController : MonoBehaviour
             {
                 isDodging = false;
                 animator.SetTrigger("isDodging");
-                
+
             }
-            if (animator.GetCurrentAnimatorStateInfo(0).IsTag("Dodging") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-            {
-                
-                isDodging = true;
-            }
+            
         }
 
         void LockedOnLeftDodge()
@@ -319,10 +411,7 @@ public class AnimationStateController : MonoBehaviour
                 isDodging = false;
                 animator.SetTrigger("isDodgingLeft");
             }
-            if (animator.GetCurrentAnimatorStateInfo(0).IsTag("DodgingLeft") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-            {
-                isDodging = false;
-            }
+           
         }
 
         void LockedOnRightDodge()
@@ -333,10 +422,7 @@ public class AnimationStateController : MonoBehaviour
                 isDodging = false;
                 animator.SetTrigger("isDodgingRight");
             }
-            if (animator.GetCurrentAnimatorStateInfo(0).IsTag("DodgingRight") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-            {
-                isDodging = false;
-            }
+            
         }
 
         void LockedOnBackwardDodge()
@@ -347,10 +433,7 @@ public class AnimationStateController : MonoBehaviour
                 isDodging = false;
                 animator.SetTrigger("isDodgingBackward");
             }
-            if (animator.GetCurrentAnimatorStateInfo(0).IsTag("DodgingBackward") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-            {
-                isDodging = false;
-            }
+            
         }
 
         void LockedOnBackwardRightDiagonalRolling()
@@ -361,10 +444,7 @@ public class AnimationStateController : MonoBehaviour
                 isDodging = false;
                 animator.SetTrigger("isDodgingBackwardRightDiagonal");
             }
-            if (animator.GetCurrentAnimatorStateInfo(0).IsTag("DodgingBackwardRightDiagonal") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-            {
-                isDodging = false;
-            }
+            
         }
 
         void LockedOnBackwardLeftDiagonalRolling()
@@ -375,10 +455,7 @@ public class AnimationStateController : MonoBehaviour
                 isDodging = false;
                 animator.SetTrigger("isDodgingBackwardLeftDiagonal");
             }
-            if (animator.GetCurrentAnimatorStateInfo(0).IsTag("DodgingBackwardLeftDiagonal") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-            {
-                isDodging = false;
-            }
+            
         }
 
         void LockedOnForwardLeftDiagonalRolling()
@@ -389,10 +466,7 @@ public class AnimationStateController : MonoBehaviour
                 isDodging = false;
                 animator.SetTrigger("isDodgingLeftDiagonal");
             }
-            if (animator.GetCurrentAnimatorStateInfo(0).IsTag("DodgingLeftDiagonal") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-            {
-                isDodging = false;
-            }
+           
         }
 
         void LockedOnForwardRightDiagonalRolling()
@@ -403,10 +477,7 @@ public class AnimationStateController : MonoBehaviour
                 isDodging = false;
                 animator.SetTrigger("isDodgingRightDiagonal");
             }
-            if (animator.GetCurrentAnimatorStateInfo(0).IsTag("DodgingRightDiagonal") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f)
-            {
-                isDodging = false;
-            }
+            
         }
 
 
@@ -421,12 +492,106 @@ public class AnimationStateController : MonoBehaviour
             animator.SetBool(isWalkingHash, false);
         }
 
-        //start freelook running
-        if (isFreeLookActive && !isRunning && ((forwardPressed || rightPressed || leftPressed || backPressed) && shiftPressed))
+        
+            // start freelook running
+            if (isFreeLookActive && !isRunning && ((forwardPressed || rightPressed || leftPressed || backPressed) && shiftPressed)&& stamina > 12)
+            {
+                animator.SetBool(isRunningHash, true);
+                animator.SetBool(isWalkingHash, false); 
+            }
+        
+        else if (isFreeLookActive && !isRunning && ((forwardPressed || rightPressed || leftPressed || backPressed) && shiftPressed) && stamina < 10) 
         {
+            animator.SetBool(isRunningHash, false);
+            animator.SetBool(isWalkingHash, true);
+            player.speed = 1; 
+        }
+        //--------------------------------------------
+        
+            //start locked on forward running
+            if (!isFreeLookActive && !isLockedOnRunningForward && forwardPressed && shiftPressed && stamina > 12)
+            {
+                animator.SetBool(isLockedOnRunningForwardHash, true);
+                animator.SetBool(isLockedOnWalkingForwardHash, false);
+            }
+        
+        else if (!isFreeLookActive && !isLockedOnRunningForward && forwardPressed && shiftPressed && stamina < 10)
+        {
+            animator.SetBool(isLockedOnRunningForwardHash, false);
+            animator.SetBool(isLockedOnWalkingForwardHash, true);
+            player.speed = 1;
+        }
+        //--------------------------------------------
+        //stop locked on forward running 
+        if (isFreeLookActive || (isLockedOnRunningForward && (!forwardPressed || !shiftPressed)))
+        {
+            animator.SetBool(isLockedOnRunningForwardHash, false);
             
-            animator.SetBool(isRunningHash, true);
-            
+        }
+
+
+        
+            //start locked on backward running
+            if (!isFreeLookActive && !isLockedOnRunningBackward && backPressed && shiftPressed && stamina > 12)
+            {
+                animator.SetBool(isLockedOnRunningBackwardHash, true);
+                animator.SetBool(isLockedOnWalkingBackwardHash, false);
+            }
+        
+        else if (!isFreeLookActive && !isLockedOnRunningBackward && backPressed && shiftPressed && stamina < 10)
+        {
+            animator.SetBool(isLockedOnRunningBackwardHash, false);
+            animator.SetBool(isLockedOnWalkingBackwardHash, true);
+            //player.speed = 1;
+        }
+        //--------------------------------------------
+        //stop locked on backward running 
+        if (isFreeLookActive || (isLockedOnRunningBackward && (!backPressed || !shiftPressed)))
+        {
+            animator.SetBool(isLockedOnRunningBackwardHash, false);
+        }
+
+       
+            //start locked on right strafing
+            if (!isFreeLookActive && !isLockedOnRightStrafing && rightPressed && shiftPressed && stamina > 12)
+            {
+                animator.SetBool(isLockedOnRightStrafingHash, true);
+                animator.SetBool(isLockedOnWalkingRightHash, false);
+            }
+        
+        else if(!isFreeLookActive && !isLockedOnRightStrafing && rightPressed && shiftPressed && stamina < 10)
+        {
+            Debug.Log("right walking");
+            animator.SetBool(isLockedOnRightStrafingHash, false);
+            animator.SetBool(isLockedOnWalkingRightHash, true);
+        }
+
+        //--------------------------------------------
+        //stop locked on right strafing
+        if (isFreeLookActive || (isLockedOnRightStrafing && (!rightPressed || !shiftPressed)))
+        {
+            animator.SetBool(isLockedOnRightStrafingHash, false);
+        }
+
+
+        
+            //start locked on leftt strafing
+            if (!isFreeLookActive && !isLockedOnLeftStrafing && leftPressed && shiftPressed && stamina > 12)
+            {
+                animator.SetBool(isLockedOnLeftStrafingHash, true);
+                animator.SetBool(isLockedOnWalkingLeftHash, false);
+            }
+        
+        else if (!isFreeLookActive && !isLockedOnLeftStrafing && leftPressed && shiftPressed && stamina < 10)
+        {
+            animator.SetBool(isLockedOnLeftStrafingHash, false);
+            animator.SetBool(isLockedOnWalkingLeftHash, true);
+        }
+
+        //stop locked on left strafing
+        if (isFreeLookActive || (isLockedOnLeftStrafing && (!leftPressed || !shiftPressed)))
+        {
+            animator.SetBool(isLockedOnLeftStrafingHash, false);
         }
 
         //stop freelook running
@@ -487,56 +652,42 @@ public class AnimationStateController : MonoBehaviour
         }
 
 
-        //start locked on forward running
-        if (!isFreeLookActive && !isLockedOnRunningForward && forwardPressed && shiftPressed)
-        {
-            animator.SetBool(isLockedOnRunningForwardHash, true);
-        }
-
-        //stop locked on forward running 
-        if (isFreeLookActive || (isLockedOnRunningForward && (!forwardPressed || !shiftPressed)))
-        {
-            animator.SetBool(isLockedOnRunningForwardHash, false);
-        }
-
-
-        //start locked on backward running 
-        if (!isFreeLookActive && !isLockedOnRunningBackward && backPressed && shiftPressed)
-        {
-            animator.SetBool(isLockedOnRunningBackwardHash, true);
-        }
-
-        //stop locked on backward running 
-        if (isFreeLookActive || (isLockedOnRunningBackward && (!backPressed || !shiftPressed)))
-        {
-            animator.SetBool(isLockedOnRunningBackwardHash, false);
-        }
-
-
-        //start locked on right strafing
-        if (!isFreeLookActive && !isLockedOnRightStrafing && rightPressed && shiftPressed)
-        {
-            animator.SetBool(isLockedOnRightStrafingHash, true);
-        }
-
-        //stop locked on right strafing
-        if (isFreeLookActive || (isLockedOnRightStrafing && (!rightPressed || !shiftPressed)))
-        {
-            animator.SetBool(isLockedOnRightStrafingHash, false);
-        }
-
-
-        //start locked on left strafing
-        if (!isFreeLookActive && !isLockedOnLeftStrafing && leftPressed && shiftPressed)
-        {
-            animator.SetBool(isLockedOnLeftStrafingHash, true);
-        }
-
-        //stop locked on left strafing
-        if (isFreeLookActive || (isLockedOnLeftStrafing && (!leftPressed || !shiftPressed)))
-        {
-            animator.SetBool(isLockedOnLeftStrafingHash, false);
-        }
+        
 
     }
+
+    private void UseMedicineAnimation()
+    {
+        StartCoroutine(DeacreaseMedicineCountWithDelay());
+        animator.SetTrigger("isHealing");
+    }
+
+    IEnumerator DeacreaseMedicineCountWithDelay()
+    {
+        yield return new WaitForSeconds(2.65f);
+        medicineCount--;
+    }
+
+    void FreeLookHeavyAttack()
+    {
+
+        animator.SetTrigger("isAttackingHeavy");
+
+    }
+
+    void LightAttackComboTwo()
+    {
+
+        animator.SetTrigger("isLightComboTwo");
+
+    }
+
+
+    void FreeLookLightAttack()
+    {
+
+        animator.SetTrigger("isAttackingLight");
+
+    }
+
 }

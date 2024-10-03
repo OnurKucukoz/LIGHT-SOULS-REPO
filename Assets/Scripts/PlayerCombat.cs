@@ -7,6 +7,8 @@ using UnityEngine.UIElements;
 using UnityEngine.Windows;
 using static UnityEditor.FilePathAttribute;
 using static UnityEngine.EventSystems.EventTrigger;
+using TMPro;
+using UnityEngine.UI;
 
 public class PlayerCombat : MonoBehaviour
 {
@@ -19,10 +21,12 @@ public class PlayerCombat : MonoBehaviour
     Player player;
     AnimationStateController playerAnimationStateController;
     PlayerWeapon playerWeapon;
+    MeshCollider playerMeshCol;
+    Enemy enemy;
+    
+         
 
-    private bool isAttacking = false;
-    private int comboStep = 0; 
-    private float lastAttackTime = 0f; 
+     
     public float comboResetTime = 1f; 
 
 
@@ -41,14 +45,17 @@ public class PlayerCombat : MonoBehaviour
         player = GameObject.Find("Player").GetComponent<Player>();
         playerAnimationStateController = GameObject.Find("Player").GetComponent<AnimationStateController>();
         playerWeapon = GameObject.Find("Attack Point").GetComponent<PlayerWeapon>();
+        playerMeshCol = GameObject.Find("Player").GetComponent<MeshCollider>();
+        enemy = GameObject.Find("newBosss").GetComponent<Enemy>();
 
-       
 
         TurnOffWeaponCollider();
     }
 
     private void Update()
     {
+        
+
         if (currentHealth <= 0)
         {
             Die();
@@ -65,47 +72,39 @@ public class PlayerCombat : MonoBehaviour
             ResetCombo();
         }*/
     }
-
-    void PerformCombo()
+    public void HealUp()
     {
-        lastAttackTime = Time.time;
-        isAttacking = true;
-
-        if (comboStep == 0)
-        {
-            playerAnimator.SetTrigger("isAttackingLight");
-            comboStep = 1;
-            StartCoroutine(ResetAttackFlag());
-        }
-        else if (comboStep == 1)
-        {
-            playerAnimator.SetTrigger("isLightComboTwo");
-            comboStep = 2;
-            StartCoroutine(ResetAttackFlag());
-        }
-        else if (comboStep == 2)
-        {
-            playerAnimator.SetTrigger("isLightComboLast");
-            comboStep = 0;
-            StartCoroutine(ResetAttackFlag());
-        }
-
-        //StartCoroutine(ResetAttackFlag());
+        currentHealth += 30;
+        currentHealth = Math.Min(currentHealth, 100);
     }
 
-    IEnumerator ResetAttackFlag()
+    public void TurnOnLightDamage()
     {
-        AnimatorStateInfo animStateInfo = playerAnimator.GetCurrentAnimatorStateInfo(0);
+        playerWeapon.isLightDamage = true;
+    }
+
+    public void TurnOffLightDamage()
+    {
+        playerWeapon.isLightDamage = false;
+    }
+    public void TurnOnHeavyDamage()
+    {
+        playerWeapon.isHeavyDamage = true;
+    }
+
+    public void TurnOffHeavyDamage()
+    {
+        playerWeapon.isHeavyDamage = false;
+    }
+
+    public void PerformSecondLightAttack()
+    {
+        Debug.Log("calisyo mu");
+
+        if (UnityEngine.Input.GetMouseButtonDown(0))
+        playerAnimator.SetTrigger("isLightComboTwo");
 
         
-        yield return new WaitForSeconds(animStateInfo.length * 0.3f); 
-
-        isAttacking = false; 
-    }
-
-    void ResetCombo()
-    {
-        comboStep = 0;
     }
 
     public void TurnOnWeaponCollider()
@@ -123,7 +122,11 @@ public class PlayerCombat : MonoBehaviour
        
         player.enabled = false;
         playerAnimationStateController.enabled = false;
+        playerMeshCol.enabled = false;
+
         playerAnimator.SetBool("isDead", true);
+        enemy.enabled = false;
+
 
     }
 

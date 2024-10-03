@@ -3,15 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using static UnityEngine.EventSystems.EventTrigger;
 
 public class Enemy : MonoBehaviour
 {
     public int currentHealth;
-    private int maxHealth = 100;
+    private int maxHealth = 200;
     Enemy enemy;
     Animator enemyAnimator;
     EnemyWeapon enemyWeapon;
+    Rigidbody enemyRigidbody;
     
     bool isLightAttacking;
     bool isHeavyAttacking;
@@ -28,7 +30,7 @@ public class Enemy : MonoBehaviour
     public float attackCooldown = 5f;
     public bool canAttack = true;
 
-   
+    Canvas enemyFocusPoint;
 
     public void TurnOnWeaponCollider()
     {
@@ -40,11 +42,44 @@ public class Enemy : MonoBehaviour
         enemyWeapon.GetComponent<BoxCollider>().enabled = false;
     }
 
+    public void TurnOnLightDamage()
+    {
+        enemyWeapon.isLightDamage = true;
+    }
+
+    public void TurnOffLightDamage()
+    {
+        enemyWeapon.isLightDamage = false;
+    }
+    public void TurnOnHeavyDamage()
+    {
+        enemyWeapon.isHeavyDamage = true;
+    }
+
+    public void TurnOffHeavyDamage()
+    {
+        enemyWeapon.isHeavyDamage = false;
+    }
+    public void TurnOnComboDamage()
+    {
+        enemyWeapon.isComboDamage = true;
+    }
+
+    public void TurnOffComboDamage()
+    {
+        enemyWeapon.isComboDamage = false;
+    }
+
+
     void Start()
     {
         enemy = GameObject.Find("newBosss").GetComponent<Enemy>();
         enemyAnimator = GameObject.Find("newBosss").GetComponent<Animator>();
         enemyWeapon = GameObject.Find("EnemyWeaponCol").GetComponent<EnemyWeapon>();
+       // enemyFocusPoint = GameObject.Find("Focus Canvas").GetComponent<Canvas>();
+        enemyRigidbody = GameObject.Find("newBosss").GetComponent<Rigidbody>();
+
+
         currentHealth = maxHealth;
 
         TurnOffWeaponCollider();
@@ -54,6 +89,11 @@ public class Enemy : MonoBehaviour
     
     private void Update()
     {
+        if (currentHealth <= 0)
+        {
+            Die();
+            //Ending screen or mutant
+        }
         distanceToPlayer = Vector3.Distance(player.transform.position, gameObject.transform.position);
         Vector3 directionToTarget = player.transform.position - transform.position;
         directionToTarget.y = 0;
@@ -92,11 +132,7 @@ public class Enemy : MonoBehaviour
             enemyAnimator.SetBool("isEnemyMidRunning", false);
         }
 
-        if (currentHealth <= 0)
-        {
-            Die();
-            //Ending screen or mutant
-        }
+        
     }
 
     private void StopMoving()
@@ -106,13 +142,23 @@ public class Enemy : MonoBehaviour
 
     public void Die()
     {
-
+        moveSpeed = 0f;
         enemy.enabled = false;
 
-        enemyAnimator.SetBool("isEnemyDead", true);
+        enemyAnimator.SetBool("isEnemyDead",true);
+
+        //enemyFocusPoint.enabled = false;
+        
+
+
 
     }
+    public void EndingEnemyLife()
+    {
+       enemyAnimator.enabled = false;
+       enemyRigidbody.constraints = RigidbodyConstraints.FreezeAll;
 
+    }
     void FollowPlayer()
     {
 
