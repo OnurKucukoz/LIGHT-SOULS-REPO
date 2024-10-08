@@ -15,23 +15,21 @@ public class Player : MonoBehaviour
     public float rotationSpeed = 10f;
     public bool isLocked = false;
 
-    Animator animator;
+
 
     Vector3 direction;
 
     public Transform target;
     public AnimationStateController animationStateController;
-    Image enemyFocusPoint;
+ 
 
     void Start()
     {
-        animator = GetComponent<Animator>();
-
         isLocked = false;
         
         animationStateController =GameObject.Find("Player").GetComponent<AnimationStateController>();
 
-        //enemyFocusPoint = GameObject.Find("Enemy Focus Point").GetComponent<Image>();
+
 
     }
 
@@ -261,14 +259,14 @@ public class Player : MonoBehaviour
         // Call the appropriate movement method based on isLocked state
         if (isLocked)
         {
-            //enemyFocusPoint.enabled = true;
+           // enemyFocusPoint.enabled = true;
 
             //turn on knob
             LockedOnPlayerMovement();
         }
         else
         {
-            //enemyFocusPoint.enabled = false;
+           // enemyFocusPoint.enabled = false;
 
             //turn off knob
             FreelookPlayerMovement();

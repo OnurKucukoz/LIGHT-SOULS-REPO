@@ -1,19 +1,9 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
-using UnityEngine.UIElements;
-using UnityEngine.Windows;
-using static UnityEditor.FilePathAttribute;
-using static UnityEngine.EventSystems.EventTrigger;
-using TMPro;
-using UnityEngine.UI;
 
 public class PlayerCombat : MonoBehaviour
 {
-    
-    
+   
     public int currentHealth;
     public int maxHealth = 100;
     
@@ -23,24 +13,19 @@ public class PlayerCombat : MonoBehaviour
     PlayerWeapon playerWeapon;
     MeshCollider playerMeshCol;
     Enemy enemy;
-    
-         
 
      
     public float comboResetTime = 1f; 
 
 
     public Collider other;
-    bool isCollided;
 
     private void Awake()
     {
         currentHealth = maxHealth;
-
     }
     void Start()
-    {
-        
+    {       
         playerAnimator = GameObject.Find("Player").GetComponent<Animator>();
         player = GameObject.Find("Player").GetComponent<Player>();
         playerAnimationStateController = GameObject.Find("Player").GetComponent<AnimationStateController>();
@@ -53,24 +38,11 @@ public class PlayerCombat : MonoBehaviour
     }
 
     private void Update()
-    {
-        
-
+    {        
         if (currentHealth <= 0)
         {
             Die();
         }
-/*
-        if (UnityEngine.Input.GetMouseButtonDown(0) && !isAttacking) 
-        {
-            PerformCombo();
-        }*/
-
-        
-     /*   if (Time.time - lastAttackTime > comboResetTime)
-        {
-            ResetCombo();
-        }*/
     }
     public void HealUp()
     {
@@ -99,7 +71,7 @@ public class PlayerCombat : MonoBehaviour
 
     public void PerformSecondLightAttack()
     {
-        Debug.Log("calisyo mu");
+       
 
         if (UnityEngine.Input.GetMouseButtonDown(0))
         playerAnimator.SetTrigger("isLightComboTwo");
@@ -123,11 +95,12 @@ public class PlayerCombat : MonoBehaviour
         player.enabled = false;
         playerAnimationStateController.enabled = false;
         playerMeshCol.enabled = false;
-
+        
         playerAnimator.SetBool("isDead", true);
         enemy.enabled = false;
 
-
+        // lose screen
+        // lose music 7 sec
     }
 
 

@@ -17,43 +17,28 @@ public class PlayerWeapon : MonoBehaviour
 
     public int lightDamage = 10;
     public int heavyDamage = 30;
-    
 
-    Animator enemyAnimator;
+    public AudioSource playerWeaponAudioSource;
+
+    public AudioClip playerLightCutsEnemy;
+    public AudioClip playerHeavyCutsEnemy;
+    
 
     private void Start()
     {
         enemy = GameObject.Find("newBosss").GetComponent<Enemy>();
-        enemyAnimator = GameObject.Find("newBosss").GetComponent<Animator>();
-
-    }
-
-    public void Damage(int damage)
-    {
-        if (isTriggered )
-        {
-            enemy.currentHealth -= damage;
-            // set blood vfx
-            // set hit noise
-            // animasyon belli bir yerdeyken vurabilsin sadece
-        }
-        else Debug.Log("Not happended");
     }
 
     public void LightDamage()
     {
 
-
         if (isTriggered)
-        {
-            
+        {  
             enemy.currentHealth -= lightDamage;
+            playerWeaponAudioSource.pitch = Random.Range(0.8f, 1f);
+            playerWeaponAudioSource.PlayOneShot(playerLightCutsEnemy);
             // set blood vfx
-            // set hit noise
-
         }
-
-
     }
 
     public void HeavyDamage()
@@ -61,13 +46,12 @@ public class PlayerWeapon : MonoBehaviour
 
         if (isTriggered)
         {
-
             enemy.currentHealth -= heavyDamage;
+            playerWeaponAudioSource.pitch = Random.Range(0.8f, 1f);
+            playerWeaponAudioSource.PlayOneShot(playerHeavyCutsEnemy);
+
             // set blood vfx
-            // set hit noise
-
         }
-
 
     }
 
@@ -78,16 +62,12 @@ public class PlayerWeapon : MonoBehaviour
 
         if (other.transform.tag == "Enemy" && isLightDamage)
         {
-
             LightDamage();
-
         }
 
         if (other.transform.tag == "Enemy" && isHeavyDamage)
         {
-
             HeavyDamage();
-
         }
 
         enemy.TurnOffWeaponCollider();

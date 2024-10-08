@@ -24,14 +24,15 @@ public class Enemy : MonoBehaviour
     public float followRange = 15f;
 
 
+    public AudioSource enemyWeaponAudioSource;
+    public AudioClip enemyDyingSound;
+    
     public float attackRange = 1.5f; 
     public float minAttackDistance = 1.2f;
 
     public float attackCooldown = 5f;
     public bool canAttack = true;
-
-    Canvas enemyFocusPoint;
-
+   
     public void TurnOnWeaponCollider()
     {
         enemyWeapon.GetComponent<BoxCollider>().enabled = true;
@@ -76,7 +77,6 @@ public class Enemy : MonoBehaviour
         enemy = GameObject.Find("newBosss").GetComponent<Enemy>();
         enemyAnimator = GameObject.Find("newBosss").GetComponent<Animator>();
         enemyWeapon = GameObject.Find("EnemyWeaponCol").GetComponent<EnemyWeapon>();
-       // enemyFocusPoint = GameObject.Find("Focus Canvas").GetComponent<Canvas>();
         enemyRigidbody = GameObject.Find("newBosss").GetComponent<Rigidbody>();
 
 
@@ -122,13 +122,10 @@ public class Enemy : MonoBehaviour
            if(distanceToPlayer <= 2.4f)
             {
                 StopMoving();
-            }
-
-           
+            }           
         }
         else
         {
-
             enemyAnimator.SetBool("isEnemyMidRunning", false);
         }
 
@@ -146,12 +143,9 @@ public class Enemy : MonoBehaviour
         enemy.enabled = false;
 
         enemyAnimator.SetBool("isEnemyDead",true);
-
-        //enemyFocusPoint.enabled = false;
+        enemyWeaponAudioSource.PlayOneShot(enemyDyingSound);
         
-
-
-
+        // win screen
     }
     public void EndingEnemyLife()
     {
@@ -176,13 +170,13 @@ public class Enemy : MonoBehaviour
 
     public float attackMoveDistance = 0.5f;
     bool isDodging;
+    
+
     public void AttackPlayer()
     {
         
         int randomAttack = UnityEngine.Random.Range(0, 3);
-        //int randomDodgeMoves = UnityEngine.Random.Range(0, 2);
-
-
+    
         switch (randomAttack )
         {
             case 0:
@@ -196,35 +190,11 @@ public class Enemy : MonoBehaviour
                 StartCoroutine(ComboAttack());
                 break;
 
-        }
-       
-        
-       
+        }      
         canAttack = false;
-        //StartCoroutine(WaitAttackFinish());
-        //Invoke("ResetAttack", attackCooldown);
-       // StartCoroutine(ResetAttack());
     }
 
-   
-
-
-  /*  private void MoveTowardsPlayer(float distance)
-    {
-        transform.Translate (Vector3.forward * distance * Time.deltaTime, Space.Self) ;
-    }
-
-   IEnumerator  ResetAttack()
-    {
-        yield return new WaitForSeconds(10.44f); 
-        
-    }
-
-    IEnumerator WaitAttackFinish()
-    {
-        yield return new WaitForSecondsRealtime(5f);
-        canAttack = true;
-    }*/
+  
     IEnumerator ComboAttack()
     {
         isDodging = true;
@@ -296,16 +266,7 @@ public class Enemy : MonoBehaviour
 
 
     }
-    void DontEverFollow()
-    {
-        moveSpeed = 0;
-        
-    }
-    void FollowNow()
-    {
-        moveSpeed = 2f;
-    }
-
+ 
     void LookAtPlayer()
     {
         Vector3 directionToPlayer = player.transform.position - transform.position;
@@ -326,9 +287,6 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSecondsRealtime(2f);
         moveSpeed = 2.3f;
         isDodging = false;
-
-
-
     }
 
     IEnumerator DodgeLeft()
@@ -340,8 +298,6 @@ public class Enemy : MonoBehaviour
         yield return new WaitForSecondsRealtime(2f);
         moveSpeed = 2.3f;
         isDodging = false;
-
-
     }
 
     IEnumerator WalkBackward()
@@ -356,7 +312,4 @@ public class Enemy : MonoBehaviour
         isDodging = false;
 
     }
-
-    
-
 }

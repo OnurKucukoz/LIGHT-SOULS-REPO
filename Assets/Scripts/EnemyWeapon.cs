@@ -19,6 +19,14 @@ public class EnemyWeapon : MonoBehaviour
     public int heavyDamage = 20;
     public int comboDamage = 15;
 
+    public AudioSource enemyWeaponAudioSource;
+   
+
+    public AudioClip heavyHitClip;
+    public AudioClip playerGetsHeavyHit;
+    public AudioClip playerGetsLightHit;
+    public AudioClip enemyCutsPlayerLightHit;
+
 
     // Start is called before the first frame update
     void Start()
@@ -37,11 +45,15 @@ public class EnemyWeapon : MonoBehaviour
             animationStateController.cooldownTimer = 0.41f;
             player.currentHealth -= lightDamage;
             StartCoroutine(StopRotationLight());
+            enemyWeaponAudioSource.pitch = Random.Range(0.8f, 1f);
+            enemyWeaponAudioSource.PlayOneShot(enemyCutsPlayerLightHit);
+            enemyWeaponAudioSource.PlayOneShot(playerGetsLightHit);
             // set blood vfx
-            // set hit noise
+           
         }
     }
 
+   
     public void HeavyDamage()
     {
         if (isTriggered)
@@ -50,10 +62,35 @@ public class EnemyWeapon : MonoBehaviour
             animationStateController.cooldownTimer = 1.71f;
             player.currentHealth -= heavyDamage;
             StartCoroutine(StopRotationHeavy());
+            enemyWeaponAudioSource.pitch = 0.5f;
+            enemyWeaponAudioSource.PlayOneShot(playerGetsHeavyHit);
+            enemyWeaponAudioSource.pitch = Random.Range(1f, 1.2f);
+            enemyWeaponAudioSource.PlayOneShot(heavyHitClip);
+            
             // set blood vfx
-            // set hit noise
         }
 
+    }
+    public void ComboDamage()
+    {
+        isComboDamage = true;
+
+        if (isTriggered )
+        {
+            playerAnimator.SetTrigger("isGettingHit");
+            animationStateController.cooldownTimer = 0.41f;
+            player.currentHealth -= comboDamage;
+            StartCoroutine(StopRotationLight());
+            enemyWeaponAudioSource.pitch = Random.Range(1f, 1.2f);
+            enemyWeaponAudioSource.PlayOneShot(enemyCutsPlayerLightHit);
+            enemyWeaponAudioSource.PlayOneShot(playerGetsLightHit);
+
+            // set blood vfx
+            // set hit noise
+
+        }
+
+        isComboDamage = false;
     }
    IEnumerator StopRotationHeavy()
     {
@@ -70,23 +107,6 @@ public class EnemyWeapon : MonoBehaviour
         thePlayer.rotationSpeed = 10;
 
     }
-    public void ComboDamage()
-    {
-        isComboDamage = true;
-
-        if (isTriggered )
-        {
-            playerAnimator.SetTrigger("isGettingHit");
-            animationStateController.cooldownTimer = 0.41f;
-            player.currentHealth -= comboDamage;
-            StartCoroutine(StopRotationLight());
-            // set blood vfx
-            // set hit noise
-
-        }
-
-        isComboDamage = false;
-    }
 
     public void OnTriggerEnter(Collider other)
     {
@@ -94,7 +114,7 @@ public class EnemyWeapon : MonoBehaviour
 
         if (other.transform.tag == "Player" && isLightDamage)
         {
-
+            
             LightDamage();
 
         }
@@ -108,7 +128,7 @@ public class EnemyWeapon : MonoBehaviour
 
         if (other.transform.tag == "Player" && isComboDamage)
         {
-
+            
             ComboDamage();
 
         }

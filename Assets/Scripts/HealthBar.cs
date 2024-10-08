@@ -9,7 +9,6 @@ public class HealthBar : MonoBehaviour
     public Slider slider;
     public Slider easeHealthSlider;
     private float lerpSpeed = 0.05f;
-    
     public Image fill;
 
     private void Start()
@@ -24,8 +23,5 @@ public class HealthBar : MonoBehaviour
 
         easeHealthSlider.value = Mathf.Lerp(easeHealthSlider.value, playerCombat.currentHealth, lerpSpeed);
 
-        //fill.color = gradient.Evaluate(1f);
-
-        //fill.color = gradient.Evaluate(slider.normalizedValue);
     }
 }

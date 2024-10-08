@@ -49,14 +49,8 @@ public class AnimationStateController : MonoBehaviour
     public float stamina;
     private float staminaCostLightAttack = 8;
     private float staminaCostHeavyAttack = 14;
-    private float staminaCostComboAttack = 5;
-    private float staminaCostDodge = 13;
-    private float staminaCostRun = 3;
     public float maxStamina = 100f;
     public bool isStaminaCostingNow;
-
-
-   // public TextMeshProUGUI medicineCountUI;
 
     public TextMeshProUGUI medicineCountText;
     void Start()

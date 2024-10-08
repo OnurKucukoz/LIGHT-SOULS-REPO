@@ -54129,15 +54129,15 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.76666665
-    functionName: DontEverFollow
+  - time: 0.6666667
+    functionName: PlayFootstepsSound
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 1.6166667
-    functionName: FollowNow
+  - time: 0.81666666
+    functionName: PlayFootstepsSound
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
