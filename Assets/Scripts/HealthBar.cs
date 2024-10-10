@@ -3,25 +3,27 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HealthBar : MonoBehaviour
+public class HealthBar : HealthBarParent //INHERITANCE
 {
-    PlayerCombat playerCombat;
-    public Slider slider;
-    public Slider easeHealthSlider;
-    private float lerpSpeed = 0.05f;
-    public Image fill;
+    private PlayerCombat playerCombat;
+   
 
     private void Start()
-    {
-        playerCombat = GameObject.Find("Player").GetComponent<PlayerCombat>();
+    {     
         slider = GameObject.Find("Player Health Bar").GetComponent<Slider>();
+        easeHealthSlider = GameObject.Find("Player Ease Health Bar").GetComponent<Slider>();
+
+        playerCombat = GameObject.Find("Player").GetComponent<PlayerCombat>();
     }
 
     private void Update()
-    {
-        slider.value = playerCombat.currentHealth;
+    {        
+            UpdateHealthSliders();   
+    }
 
-        easeHealthSlider.value = Mathf.Lerp(easeHealthSlider.value, playerCombat.currentHealth, lerpSpeed);
-
+    protected override void UpdateHealthSliders() //POLYMORPHISM
+    {       
+            slider.value = playerCombat.currentHealth;
+            easeHealthSlider.value = Mathf.Lerp(easeHealthSlider.value, playerCombat.currentHealth, lerpSpeed);
     }
 }

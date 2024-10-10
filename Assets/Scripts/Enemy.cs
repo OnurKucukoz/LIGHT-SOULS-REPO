@@ -6,9 +6,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.EventSystems.EventTrigger;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IHasHealth
 {
     public int currentHealth;
+    int IHasHealth.currentHealth
+    {
+        get { return currentHealth; }
+    }
+
     private int maxHealth = 200;
     Enemy enemy;
     Animator enemyAnimator;
@@ -22,7 +27,6 @@ public class Enemy : MonoBehaviour
     public GameObject player;
     public float moveSpeed = 1f;
     public float followRange = 15f;
-
 
     public AudioSource enemyWeaponAudioSource;
     public AudioClip enemyDyingSound;

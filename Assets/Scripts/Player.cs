@@ -25,12 +25,8 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        isLocked = false;
-        
+        isLocked = false;        
         animationStateController =GameObject.Find("Player").GetComponent<AnimationStateController>();
-
-
-
     }
 
 

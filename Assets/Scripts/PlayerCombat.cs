@@ -1,10 +1,13 @@
 using System;
 using UnityEngine;
 
-public class PlayerCombat : MonoBehaviour
+public class PlayerCombat : MonoBehaviour, IHasHealth
 {
-   
     public int currentHealth;
+    int IHasHealth.currentHealth
+    {
+        get { return currentHealth; }
+    }
     public int maxHealth = 100;
     
     Animator playerAnimator;
@@ -13,12 +16,6 @@ public class PlayerCombat : MonoBehaviour
     PlayerWeapon playerWeapon;
     MeshCollider playerMeshCol;
     Enemy enemy;
-
-     
-    public float comboResetTime = 1f; 
-
-
-    public Collider other;
 
     private void Awake()
     {
@@ -100,7 +97,6 @@ public class PlayerCombat : MonoBehaviour
         enemy.enabled = false;
 
         // lose screen
-        // lose music 7 sec
     }
 
 
