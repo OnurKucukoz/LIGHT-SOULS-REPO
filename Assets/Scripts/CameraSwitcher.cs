@@ -21,11 +21,14 @@ public class CameraSwitcher : MonoBehaviour
 
     void Update()
     {
-
-        if (Input.GetKeyDown(KeyCode.F))
+        if (!PauseMenu.isPaused)
         {
-            SwitchCamera();
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                SwitchCamera();
+            }
         }
+       
     }
 
     void SwitchCamera()

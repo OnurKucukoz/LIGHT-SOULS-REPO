@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerCombat : MonoBehaviour, IHasHealth
 {
@@ -95,11 +97,16 @@ public class PlayerCombat : MonoBehaviour, IHasHealth
         
         playerAnimator.SetBool("isDead", true);
         enemy.enabled = false;
-
+        StartCoroutine(WaitForEndResetGame());
+        
         // lose screen
     }
 
-
+    IEnumerator WaitForEndResetGame()
+    {
+        yield return new WaitForSeconds(9.5f);
+        SceneManager.LoadScene("SampleScene");
+    }
 
 
 }

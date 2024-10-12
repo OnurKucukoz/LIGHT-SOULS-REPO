@@ -17,8 +17,11 @@ public class HealthBar : HealthBarParent //INHERITANCE
     }
 
     private void Update()
-    {        
-            UpdateHealthSliders();   
+    {
+        if (!PauseMenu.isPaused)
+        {
+            UpdateHealthSliders();
+        }
     }
 
     protected override void UpdateHealthSliders() //POLYMORPHISM

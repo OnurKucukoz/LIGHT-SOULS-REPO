@@ -5,6 +5,9 @@ public class BossHealthBar : HealthBarParent  //INHERITANCE
 {
     private void Update()
     {
-        UpdateHealthSliders();
+        if (!PauseMenu.isPaused)
+        {
+            UpdateHealthSliders();
+        }
     }
 }

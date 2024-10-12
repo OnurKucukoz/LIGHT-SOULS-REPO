@@ -17,8 +17,8 @@ public class HealthBarParent : MonoBehaviour
     {
         IHasHealth healthSource = character as IHasHealth;
         
-            slider.value = healthSource.currentHealth;
-            easeHealthSlider.value = Mathf.Lerp(easeHealthSlider.value, healthSource.currentHealth, lerpSpeed);
+        slider.value = healthSource.currentHealth;
+        easeHealthSlider.value = Mathf.Lerp(easeHealthSlider.value, healthSource.currentHealth, lerpSpeed);
         
         
     }

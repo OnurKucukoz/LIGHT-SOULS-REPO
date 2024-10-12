@@ -32,7 +32,10 @@ public class Player : MonoBehaviour
 
     void LateUpdate()
     {
-        SwitchLockState();
+        if (!PauseMenu.isPaused)
+        {
+            SwitchLockState();
+        }
     }
 
     bool isLightClicked = false;
@@ -62,7 +65,7 @@ public class Player : MonoBehaviour
         {
             StartCoroutine(StopPlayerMovementHeal());
         }
-        
+        //ABSTRACTION
         FreeLookRun();
 
 
@@ -94,7 +97,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    void FreeLookRun()
+    void FreeLookRun()//ABSTRACTION
     {
         if (Input.GetKey("left shift") && !isLightClicked && !isHeavyClicked && !isHealClicked && (animationStateController.stamina > 12))
         {
@@ -246,28 +249,30 @@ public class Player : MonoBehaviour
 
     void SwitchLockState()
     {
-        // Check for "F" key press to toggle lock-on state
-        if (Input.GetKeyDown(KeyCode.F))
+        if (!PauseMenu.isPaused)
         {
-            isLocked = !isLocked;
+            // Check for "F" key press to toggle lock-on state
+            if (Input.GetKeyDown(KeyCode.F))
+            {
+                isLocked = !isLocked;
+            }
+
+            // Call the appropriate movement method based on isLocked state
+            if (isLocked)
+            {
+                // enemyFocusPoint.enabled = true;
+
+                //turn on knob
+                LockedOnPlayerMovement();
+            }
+            else
+            {
+                // enemyFocusPoint.enabled = false;
+
+                //turn off knob
+                FreelookPlayerMovement();
+            }
         }
-
-        // Call the appropriate movement method based on isLocked state
-        if (isLocked)
-        {
-           // enemyFocusPoint.enabled = true;
-
-            //turn on knob
-            LockedOnPlayerMovement();
-        }
-        else
-        {
-           // enemyFocusPoint.enabled = false;
-
-            //turn off knob
-            FreelookPlayerMovement();
-        }
-
     }
 
 }

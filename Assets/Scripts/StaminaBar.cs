@@ -22,9 +22,13 @@ public class StaminaBar : MonoBehaviour
  
     void Update()
     {
-        slider.value = animationStateController.stamina;
+        if (!PauseMenu.isPaused)
+        {
+            slider.value = animationStateController.stamina;
 
-        easeStaminaSlider.value = Mathf.Lerp(easeStaminaSlider.value, animationStateController.stamina, lerpSpeed);
+            easeStaminaSlider.value = Mathf.Lerp(easeStaminaSlider.value, animationStateController.stamina, lerpSpeed);
+        }
+       
 
     }
 }
