@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static UnityEngine.EventSystems.EventTrigger;
 
@@ -19,14 +20,15 @@ public class Enemy : MonoBehaviour, IHasHealth
     Animator enemyAnimator;
     EnemyWeapon enemyWeapon;
     Rigidbody enemyRigidbody;
-    
+    VictoryPanel victoryPanel;
+
     bool isLightAttacking;
     bool isHeavyAttacking;
     float rotationSpeed;
     float distanceToPlayer;
     public GameObject player;
     public float moveSpeed = 1f;
-    public float followRange = 15f;
+    public float followRange = 15000f;
 
     public AudioSource enemyWeaponAudioSource;
     public AudioClip enemyDyingSound;
@@ -82,13 +84,13 @@ public class Enemy : MonoBehaviour, IHasHealth
         enemyAnimator = GameObject.Find("newBosss").GetComponent<Animator>();
         enemyWeapon = GameObject.Find("EnemyWeaponCol").GetComponent<EnemyWeapon>();
         enemyRigidbody = GameObject.Find("newBosss").GetComponent<Rigidbody>();
-
-
+        victoryPanel = GameObject.Find("Victory Panel").GetComponent<VictoryPanel>();
+        
         currentHealth = maxHealth;
-
+        victoryPanel.victoryPanel.SetActive(false);
+        victoryPanel.victoryAchievedText.SetActive(false);
         TurnOffWeaponCollider();
         isDodging = false;
-        
     }
     
     private void Update()
@@ -96,7 +98,6 @@ public class Enemy : MonoBehaviour, IHasHealth
         if (currentHealth <= 0)
         {
             Die();
-            //Ending screen or mutant
         }
         distanceToPlayer = Vector3.Distance(player.transform.position, gameObject.transform.position);
         Vector3 directionToTarget = player.transform.position - transform.position;
@@ -148,9 +149,24 @@ public class Enemy : MonoBehaviour, IHasHealth
 
         enemyAnimator.SetBool("isEnemyDead",true);
         enemyWeaponAudioSource.PlayOneShot(enemyDyingSound);
-        
-        // win screen
+        StartCoroutine(ShowVictoryPanelAfterDelay());
+        StartCoroutine(GoToCreditsScene());
     }
+
+    IEnumerator GoToCreditsScene()
+    {
+        yield return new WaitForSeconds(9.5f);
+        SceneManager.LoadScene("CreditsScene");
+    }
+
+    IEnumerator ShowVictoryPanelAfterDelay()
+    {       
+        yield return new WaitForSecondsRealtime(4f);
+
+        victoryPanel.ShowVictoryPanel();
+        
+    }
+
     public void EndingEnemyLife()
     {
        enemyAnimator.enabled = false;

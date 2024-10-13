@@ -18,21 +18,22 @@ public class PlayerCombat : MonoBehaviour, IHasHealth
     PlayerWeapon playerWeapon;
     MeshCollider playerMeshCol;
     Enemy enemy;
+    LosePanel losePanel;
 
-    private void Awake()
-    {
-        currentHealth = maxHealth;
-    }
+    
     void Start()
     {       
-        playerAnimator = GameObject.Find("Player").GetComponent<Animator>();
         player = GameObject.Find("Player").GetComponent<Player>();
+        playerAnimator = GameObject.Find("Player").GetComponent<Animator>();
         playerAnimationStateController = GameObject.Find("Player").GetComponent<AnimationStateController>();
         playerWeapon = GameObject.Find("Attack Point").GetComponent<PlayerWeapon>();
         playerMeshCol = GameObject.Find("Player").GetComponent<MeshCollider>();
         enemy = GameObject.Find("newBosss").GetComponent<Enemy>();
+        losePanel = GameObject.Find("Lose Panel").GetComponent<LosePanel>();
 
-
+        losePanel.losePanel.SetActive(false);
+        losePanel.loseText.SetActive(false);
+        currentHealth = maxHealth;
         TurnOffWeaponCollider();
     }
 
@@ -70,12 +71,8 @@ public class PlayerCombat : MonoBehaviour, IHasHealth
 
     public void PerformSecondLightAttack()
     {
-       
-
-        if (UnityEngine.Input.GetMouseButtonDown(0))
-        playerAnimator.SetTrigger("isLightComboTwo");
-
-        
+        if (Input.GetMouseButtonDown(0))
+        playerAnimator.SetTrigger("isLightComboTwo");   
     }
 
     public void TurnOnWeaponCollider()
@@ -97,9 +94,18 @@ public class PlayerCombat : MonoBehaviour, IHasHealth
         
         playerAnimator.SetBool("isDead", true);
         enemy.enabled = false;
+        StartCoroutine(ShowLosePanelAfterDelay());
+
         StartCoroutine(WaitForEndResetGame());
-        
-        // lose screen
+
+    }
+
+    IEnumerator ShowLosePanelAfterDelay()
+    {
+        yield return new WaitForSecondsRealtime(4f);
+
+        losePanel.ShowLosePanel();
+
     }
 
     IEnumerator WaitForEndResetGame()

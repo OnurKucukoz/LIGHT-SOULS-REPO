@@ -49,40 +49,39 @@ public class PlayerSoundManager : MonoBehaviour
    
     public void PlayPlayerAttackYeahSound()
     {
-        playerAudioSource.pitch = Random.Range(1f, 1.2f);
+        playerAudioSource.pitch = Random.Range(0.8f, 1f);
         playerAudioSource.PlayOneShot(playerAttackYeahSound);
     }
 
     public void PlayPlayerAttackHuohSound()
     {
-        playerAudioSource.pitch = Random.Range(1f, 1.2f);
+        playerAudioSource.pitch = Random.Range(0.8f, 1f);
         playerAudioSource.PlayOneShot(playerAttackHuohSound);
     }
 
     public void PlayPlayerAttackCuohSound()
     {
-        playerAudioSource.pitch = Random.Range(1f, 1.2f);
+        playerAudioSource.pitch = Random.Range(0.8f, 1f);
         playerAudioSource.PlayOneShot(playerAttackCuohSound);
     }
 
     public void PlayPlayerDeathSound()
     {
-        playerAudioSource.pitch = Random.Range(1f, 1.2f);
+        playerAudioSource.pitch = Random.Range(0.8f, 1f);
         playerAudioSource.PlayOneShot(playerDeathSound);
     }
-
 
     public void PlayPlayerHeavyAttackSound()
     {
         playerAudioSource.spatialBlend = 0.5f;
-        playerAudioSource.pitch = Random.Range(1f, 1.2f);
+        playerAudioSource.pitch = Random.Range(0.8f, 1f);
         playerAudioSource.PlayOneShot(playerSwordSwoshSoundHeavy);
     }
 
     public void PlayPlayerLightAttackSound()
     {
         playerAudioSource.spatialBlend = 0.5f;
-        playerAudioSource.pitch = Random.Range(1f, 1.2f);
+        playerAudioSource.pitch = Random.Range(0.8f, 1f);
         playerAudioSource.PlayOneShot(playerSwordSwoshSoundOne);
     }
 

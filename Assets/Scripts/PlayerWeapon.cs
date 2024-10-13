@@ -7,8 +7,6 @@ public class PlayerWeapon : MonoBehaviour
 
     Enemy enemy;
 
-    public int damage = 50;
-
     bool isTriggered;
 
     public bool isLightDamage;
@@ -16,7 +14,7 @@ public class PlayerWeapon : MonoBehaviour
     public bool isComboDamage;
 
     public int lightDamage = 10;
-    public int heavyDamage = 30;
+    public int heavyDamage = 2;
 
     public AudioSource playerWeaponAudioSource;
 
