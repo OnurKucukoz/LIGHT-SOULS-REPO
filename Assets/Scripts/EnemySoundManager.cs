@@ -10,6 +10,7 @@ public class EnemySoundManager : MonoBehaviour
     public AudioClip axeSwooshSound;
     public AudioClip enemyFootsteps;
     public AudioClip victorySound;
+    public AudioClip stoneShatterSound;
 
     public void PlayVictorySound()
     {
@@ -37,5 +38,10 @@ public class EnemySoundManager : MonoBehaviour
     public void PlayHeavyGruntSound()
     {
         enemyAudioSource.PlayOneShot(heavyAttackGrunt);
+    }
+
+    public void PlayStoneShatterSound()
+    {
+        enemyAudioSource.PlayOneShot(stoneShatterSound);
     }
 }

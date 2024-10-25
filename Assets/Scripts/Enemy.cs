@@ -1,15 +1,13 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-using static UnityEngine.EventSystems.EventTrigger;
+
 
 public class Enemy : MonoBehaviour, IHasHealth
 {
     public int currentHealth;
+    //ENCAPSULATION
     int IHasHealth.currentHealth
     {
         get { return currentHealth; }
@@ -19,26 +17,81 @@ public class Enemy : MonoBehaviour, IHasHealth
     Enemy enemy;
     Animator enemyAnimator;
     EnemyWeapon enemyWeapon;
+    StoneAttack stoneAttack;
     Rigidbody enemyRigidbody;
     VictoryPanel victoryPanel;
+   
 
     bool isLightAttacking;
     bool isHeavyAttacking;
     float rotationSpeed;
     float distanceToPlayer;
     public GameObject player;
-    public float moveSpeed = 1f;
+    public float moveSpeed = 4f;
     public float followRange = 15000f;
 
     public AudioSource enemyWeaponAudioSource;
     public AudioClip enemyDyingSound;
     
     public float attackRange = 1.5f; 
-    public float minAttackDistance = 1.2f;
-
+    
     public float attackCooldown = 5f;
     public bool canAttack = true;
-   
+
+    public BoxCollider stoneAttackCollider;
+    public ParticleSystem stoneAttackVFX;
+
+    public Vector3 targetColliderSize; 
+    public float growthDuration = 1f;
+    public Vector3 initialColliderSize = new Vector3(0.1f, 0.1f, 0.1f);
+    public Vector3 colliderCenterOffset = new Vector3(0f, 0f, 1f);
+
+    public void EnableStoneAttack()
+    {
+
+        stoneAttackCollider.size = initialColliderSize;
+        stoneAttackCollider.center = colliderCenterOffset;
+
+        stoneAttackCollider.enabled = true;
+        stoneAttackVFX.transform.rotation = transform.rotation;
+        stoneAttackVFX.transform.position = transform.position;
+        stoneAttackVFX.Play();
+       
+        StartCoroutine(GrowStoneAttack());
+
+    }
+    private IEnumerator GrowStoneAttack()
+    {
+       
+        Vector3 initialSize = stoneAttackCollider.size;
+
+        
+        float elapsedTime = 0f;
+        while (elapsedTime < growthDuration)
+        {
+            
+            float t = elapsedTime / growthDuration;
+
+            
+            stoneAttackCollider.size = Vector3.Lerp(initialSize, targetColliderSize, t);
+
+            
+            elapsedTime += Time.deltaTime;
+
+           
+            yield return null;
+        }
+
+        
+        stoneAttackCollider.size = targetColliderSize;
+
+        stoneAttackCollider.enabled = false;
+    }
+
+    public void DisableStoneAttack()
+    {
+        stoneAttackCollider.enabled = false;
+    }
     public void TurnOnWeaponCollider()
     {
         enemyWeapon.GetComponent<BoxCollider>().enabled = true;
@@ -77,6 +130,15 @@ public class Enemy : MonoBehaviour, IHasHealth
         enemyWeapon.isComboDamage = false;
     }
 
+    public void TurnOnStoneDamage()
+    {
+        stoneAttack.isStoneDamage = true;
+    }
+
+    public void TurnOffStoneDamage()
+    {
+        stoneAttack.isStoneDamage = false;
+    }
 
     void Start()
     {
@@ -85,16 +147,20 @@ public class Enemy : MonoBehaviour, IHasHealth
         enemyWeapon = GameObject.Find("EnemyWeaponCol").GetComponent<EnemyWeapon>();
         enemyRigidbody = GameObject.Find("newBosss").GetComponent<Rigidbody>();
         victoryPanel = GameObject.Find("Victory Panel").GetComponent<VictoryPanel>();
+        stoneAttackCollider = GameObject.Find("StoneAttackSpell").GetComponent<BoxCollider>();
+        stoneAttack = GameObject.Find("StoneAttackSpell").GetComponent<StoneAttack>();
         
+
         currentHealth = maxHealth;
         victoryPanel.victoryPanel.SetActive(false);
         victoryPanel.victoryAchievedText.SetActive(false);
         TurnOffWeaponCollider();
         isDodging = false;
     }
-    
+
     private void Update()
     {
+        
         if (currentHealth <= 0)
         {
             Die();
@@ -123,6 +189,7 @@ public class Enemy : MonoBehaviour, IHasHealth
                 LookAtPlayer();
                 AttackPlayer();
                 StopMoving();
+
             }
            if(distanceToPlayer <= 2.4f)
             {
@@ -151,12 +218,14 @@ public class Enemy : MonoBehaviour, IHasHealth
         enemyWeaponAudioSource.PlayOneShot(enemyDyingSound);
         StartCoroutine(ShowVictoryPanelAfterDelay());
         StartCoroutine(GoToCreditsScene());
+       
     }
 
     IEnumerator GoToCreditsScene()
     {
         yield return new WaitForSeconds(9.5f);
         SceneManager.LoadScene("CreditsScene");
+        Cursor.visible = true;
     }
 
     IEnumerator ShowVictoryPanelAfterDelay()
@@ -175,38 +244,34 @@ public class Enemy : MonoBehaviour, IHasHealth
     }
     void FollowPlayer()
     {
-
         Vector3 direction = (player.transform.position - transform.position).normalized;
         transform.LookAt(new Vector3(player.transform.position.x, transform.position.y, player.transform.position.z));
 
-
         transform.position += direction * moveSpeed * Time.deltaTime;
-
 
         enemyAnimator.SetBool("isEnemyMidRunning", true);
     }
 
-
-
-    public float attackMoveDistance = 0.5f;
     bool isDodging;
     
 
     public void AttackPlayer()
     {
         
-        int randomAttack = UnityEngine.Random.Range(0, 3);
+        int randomAttack = UnityEngine.Random.Range(0, 4); 
     
         switch (randomAttack )
         {
             case 0:
-               StartCoroutine(LightAttack());
+                StartCoroutine(StoneAttack());
                 break;
             case 1:
-                StartCoroutine(HeavyAttack());
+                StartCoroutine(LightAttack());
                 break;
-
             case 2:
+                StartCoroutine(HeavyAttack());              
+                break;
+            case 3:
                 StartCoroutine(ComboAttack());
                 break;
 
@@ -214,12 +279,20 @@ public class Enemy : MonoBehaviour, IHasHealth
         canAttack = false;
     }
 
-  
+    IEnumerator StoneAttack()
+    {
+        isDodging = true;
+        enemyAnimator.SetTrigger("isEnemyStoneAttacking");
+        yield return new WaitForSecondsRealtime(3.24f);
+        canAttack = true;
+        RandomDodgeMoves();
+        isDodging = false;
+    }
     IEnumerator ComboAttack()
     {
         isDodging = true;
         enemyAnimator.SetTrigger("isEnemyCombo");
-        yield return new WaitForSecondsRealtime(6.24f);
+        yield return new WaitForSecondsRealtime(5.24f);
         canAttack = true;
         RandomDodgeMoves();
         isDodging = false;
@@ -239,12 +312,14 @@ public class Enemy : MonoBehaviour, IHasHealth
     {
         isDodging = true;
         enemyAnimator.SetTrigger("isEnemyHeavyAttacking");
+
         yield return new WaitForSecondsRealtime(4.20f);
         canAttack = true;
         RandomDodgeMoves();
         isDodging = false;
     }
 
+    
     void RandomDodgeMoves()
     {
         int randomDodgeMoves = UnityEngine.Random.Range(0, 5);
@@ -252,16 +327,16 @@ public class Enemy : MonoBehaviour, IHasHealth
         switch (randomDodgeMoves)
         {
             case 0:
-                StartCoroutine(WalkBackward());
+               StartCoroutine(WalkBackward());   
                 break;
             case 1:
-                StartCoroutine(DodgeRight());
+               StartCoroutine(DodgeRight());
                 break;
             case 2:
-                StartCoroutine(DodgeLeft());
+               StartCoroutine(DodgeLeft());
                 break;
             case 3:
-                StartCoroutine(DodgeBackward());
+               StartCoroutine(DodgeBackward());
                 
                 break;
         }
@@ -280,7 +355,7 @@ public class Enemy : MonoBehaviour, IHasHealth
         enemyAnimator.SetTrigger("isEnemyDodgingBackward");
         moveSpeed = 0;
         yield return new WaitForSecondsRealtime(3f);
-        moveSpeed = 2.3f;
+        moveSpeed = 4f;
         isDodging = false;
 
 
@@ -291,7 +366,7 @@ public class Enemy : MonoBehaviour, IHasHealth
     {
         Vector3 directionToPlayer = player.transform.position - transform.position;
         Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 500f);
     }
     IEnumerator DodgeRight()
     {
@@ -305,7 +380,7 @@ public class Enemy : MonoBehaviour, IHasHealth
 
 
         yield return new WaitForSecondsRealtime(2f);
-        moveSpeed = 2.3f;
+        moveSpeed = 4f;
         isDodging = false;
     }
 
@@ -316,7 +391,7 @@ public class Enemy : MonoBehaviour, IHasHealth
         moveSpeed = 0;
         enemyAnimator.SetTrigger("isEnemyDodgingLeft");
         yield return new WaitForSecondsRealtime(2f);
-        moveSpeed = 2.3f;
+        moveSpeed = 4f;
         isDodging = false;
     }
 

@@ -17,7 +17,7 @@ public class SettingsMenu : MonoBehaviour
         }
     }
 
-    // Ana menüye dönmek için bir fonksiyon oluþtur
+    
     public void ReturnToMainMenu()
     {
        
@@ -27,5 +27,6 @@ public class SettingsMenu : MonoBehaviour
 
         EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(controlsButton);
+        Cursor.visible = true;
     }
 }

@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Enemy
+  - WallTag
   layers:
   - Default
   - TransparentFX
@@ -17,9 +18,9 @@ TagManager:
   - Camera
   - Attack Point
   - FocusPoint
-  - 
-  - 
-  - 
+  - Arena
+  - Wall
+  - PlayerInvincible
   - 
   - 
   - 

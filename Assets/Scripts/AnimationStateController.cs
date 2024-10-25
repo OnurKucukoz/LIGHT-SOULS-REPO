@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
+using System.Threading;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+
 
 public class AnimationStateController : MonoBehaviour
 {
@@ -42,6 +42,7 @@ public class AnimationStateController : MonoBehaviour
     public bool canHeavy;
     public bool canLight;
     public bool canHeal;
+    public bool canStoneAttack;
 
     public float numOfClicks;
     public int medicineCount = 3;
@@ -49,12 +50,17 @@ public class AnimationStateController : MonoBehaviour
     public float stamina;
     private float staminaCostLightAttack = 8;
     private float staminaCostHeavyAttack = 14;
-    public float maxStamina = 100f;
+    public float maxStamina = 140f;
     public bool isStaminaCostingNow;
 
     public TextMeshProUGUI medicineCountText;
+
+   
     void Start()
     {
+        Cursor.visible = false;
+        playerLayer = LayerMask.NameToLayer("Player");
+        invincibleLayer = LayerMask.NameToLayer("PlayerInvincible");
         meshCollider = GameObject.Find("Player").GetComponent<MeshCollider>();
 
         stamina = maxStamina;
@@ -65,7 +71,6 @@ public class AnimationStateController : MonoBehaviour
 
         isWalkingHash = Animator.StringToHash("isWalking");
         isRunningHash = Animator.StringToHash("isRunning");
-
 
         isLockedOnWalkingForwardHash = Animator.StringToHash("isLockedOnWalkingForward");
         isLockedOnWalkingBackwardHash = Animator.StringToHash("isLockedOnWalkingBackward");
@@ -89,54 +94,54 @@ public class AnimationStateController : MonoBehaviour
         if (isStaminaCostingNow) yield break; 
 
         isStaminaCostingNow = true;
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(3);
         isStaminaCostingNow = false;
     }
 
+
+    int playerLayer;
+    int invincibleLayer;
+   
+
     public void EnableMeshCollider()
     {
-        meshCollider.enabled = true;
+        gameObject.layer = playerLayer;
     }
 
     public void DisableMeshCollider()
     {
-        meshCollider.enabled = false;
+        gameObject.layer = invincibleLayer;
     }
 
+   
     public void EnableCombo()
     {
-        canCombo = true;
-        
+        canCombo = true;        
     }
 
     public void DisableCombo()
     {
-        canCombo = false;
-        
+        canCombo = false;      
     }
 
     public void EnableHeavy()
     {
-        canHeavy = true;
-        
+        canHeavy = true;       
     }
 
     public void DisableHeavy()
     {
-        canHeavy = false;
-        
+        canHeavy = false;      
     }
 
     public void EnableLight()
     {
-        canLight = true;
-        
+        canLight = true;        
     }
 
     public void DisableLight()
     {
-        canLight = false;
-       
+        canLight = false;       
     }
 
     public void EnableHeal()
@@ -149,18 +154,16 @@ public class AnimationStateController : MonoBehaviour
         canHeal = false;
     }
 
-
-
     void UpdateMedicineCount()
     {
         medicineCountText.text = (medicineCount-1).ToString();
     }
-
-
+    
     void Update()
     {
         if (!PauseMenu.isPaused)
         {
+            Cursor.visible = false;
             isFreeLookActive = cameraSwitcher.isFreeLookActive;
             bool isWalking = animator.GetBool(isWalkingHash);
             bool isRunning = animator.GetBool(isRunningHash);
@@ -187,12 +190,10 @@ public class AnimationStateController : MonoBehaviour
             bool rightMouseClicked = Input.GetMouseButtonDown(1);
 
 
-
             if (stamina <= 100 && !isStaminaCostingNow)
             {
-                stamina += 10 * Time.deltaTime;
+                stamina += 15 * Time.deltaTime;
             }
-
 
             if (cooldownTimer > 0)
             {
@@ -222,7 +223,6 @@ public class AnimationStateController : MonoBehaviour
                 }
             }
 
-
             if (leftMouseClicked)
             {
                 numOfClicks++;
@@ -240,20 +240,17 @@ public class AnimationStateController : MonoBehaviour
             if (rightMouseClicked)
             {
                 numOfClicks++;
-                //isHeavyAttacking = true;
+              
                 if (cooldownTimer <= 0 && !canLight && !canHeal && (stamina > staminaCostHeavyAttack))
                 {
                     stamina -= 20;
                     StartCoroutine(StaminaCostingNow());
-                    cooldownTimer = 2.25f;
+                    cooldownTimer = 2.2f;
                     FreeLookHeavyAttack();
 
-
                 }
-                // isHeavyAttacking = false;
+              
             }
-
-
 
             if (canCombo && leftMouseClicked)
             {
@@ -268,7 +265,6 @@ public class AnimationStateController : MonoBehaviour
 
                 }
             }
-
 
             if (isFreeLookActive && spacePressed && !isDodging)
             {
@@ -373,8 +369,6 @@ public class AnimationStateController : MonoBehaviour
                 }
             }
 
-
-
             void FreeLookDodge()
             {
                 //start freelook rolling 
@@ -382,7 +376,6 @@ public class AnimationStateController : MonoBehaviour
                 animator.SetTrigger("isDodging");
 
                 isDodging = false;
-
 
             }
 
@@ -475,7 +468,6 @@ public class AnimationStateController : MonoBehaviour
 
             }
 
-
             //start freelook walking
             if (isFreeLookActive && !spacePressed && !isWalking && (forwardPressed || rightPressed || leftPressed || backPressed))
             {
@@ -486,7 +478,6 @@ public class AnimationStateController : MonoBehaviour
             {
                 animator.SetBool(isWalkingHash, false);
             }
-
 
             // start freelook running
             if (isFreeLookActive && !isRunning && ((forwardPressed || rightPressed || leftPressed || backPressed) && shiftPressed) && stamina > 12)
@@ -525,7 +516,6 @@ public class AnimationStateController : MonoBehaviour
             }
 
 
-
             //start locked on backward running
             if (!isFreeLookActive && !isLockedOnRunningBackward && backPressed && shiftPressed && stamina > 12)
             {
@@ -546,7 +536,6 @@ public class AnimationStateController : MonoBehaviour
                 animator.SetBool(isLockedOnRunningBackwardHash, false);
             }
 
-
             //start locked on right strafing
             if (!isFreeLookActive && !isLockedOnRightStrafing && rightPressed && shiftPressed && stamina > 12)
             {
@@ -556,7 +545,6 @@ public class AnimationStateController : MonoBehaviour
 
             else if (!isFreeLookActive && !isLockedOnRightStrafing && rightPressed && shiftPressed && stamina < 10)
             {
-                Debug.Log("right walking");
                 animator.SetBool(isLockedOnRightStrafingHash, false);
                 animator.SetBool(isLockedOnWalkingRightHash, true);
             }
@@ -567,8 +555,6 @@ public class AnimationStateController : MonoBehaviour
             {
                 animator.SetBool(isLockedOnRightStrafingHash, false);
             }
-
-
 
             //start locked on leftt strafing
             if (!isFreeLookActive && !isLockedOnLeftStrafing && leftPressed && shiftPressed && stamina > 12)
@@ -595,7 +581,6 @@ public class AnimationStateController : MonoBehaviour
                 animator.SetBool(isRunningHash, false);
             }
 
-
             //start locked on walk forward
             if (!isFreeLookActive && !isLockedOnWalkingForward && forwardPressed)
             {
@@ -620,7 +605,6 @@ public class AnimationStateController : MonoBehaviour
                 animator.SetBool(isLockedOnWalkingBackwardHash, false);
             }
 
-
             //start locked on right strafe walking
             if (!isFreeLookActive && !isLockedOnWalkingRight && rightPressed)
             {
@@ -633,7 +617,6 @@ public class AnimationStateController : MonoBehaviour
                 animator.SetBool(isLockedOnWalkingRightHash, false);
             }
 
-
             //start locked on left strafe walking
             if (!isFreeLookActive && !isLockedOnWalkingLeft && leftPressed)
             {
@@ -645,10 +628,7 @@ public class AnimationStateController : MonoBehaviour
             {
                 animator.SetBool(isLockedOnWalkingLeftHash, false);
             }
-
         }
-        
-
     }
 
     private void UseMedicineAnimation()

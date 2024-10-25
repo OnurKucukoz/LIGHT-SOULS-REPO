@@ -26,11 +26,27 @@ public class PlayerSoundManager : MonoBehaviour
 
     public AudioClip medicineSound;
 
+    public AudioClip playerFallAfterHeavyHits;
 
+    public void PlayerFallAfterHeavyHits()
+    {
+        playerAudioSource.PlayOneShot(playerFallAfterHeavyHits);
+    }
+
+    public ParticleSystem healParticle;
+
+    private void Start()
+    {
+        healParticle.Stop();
+    }
+    public void StopMedicineEffect()
+    {
+        healParticle.Pause();
+    }
 
     public void PlayMedicineSound()
     {
-        
+        healParticle.Play();
         playerAudioSource.volume = 0.5f;
         playerAudioSource.PlayOneShot(medicineSound);
     }

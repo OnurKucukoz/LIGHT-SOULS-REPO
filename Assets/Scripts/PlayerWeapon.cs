@@ -20,11 +20,14 @@ public class PlayerWeapon : MonoBehaviour
 
     public AudioClip playerLightCutsEnemy;
     public AudioClip playerHeavyCutsEnemy;
-    
+
+    public ParticleSystem bloodEffect; 
+    public Vector3 hitPoint;
 
     private void Start()
     {
         enemy = GameObject.Find("newBosss").GetComponent<Enemy>();
+        bloodEffect.Stop();
     }
 
     public void LightDamage()
@@ -52,6 +55,8 @@ public class PlayerWeapon : MonoBehaviour
         }
 
     }
+    public GameObject bloodEffectPrefab;
+    public ParticleSystem bloodEffectVFX;
 
     public void OnTriggerEnter(Collider other)
     {
@@ -60,11 +65,19 @@ public class PlayerWeapon : MonoBehaviour
 
         if (other.transform.tag == "Enemy" && isLightDamage)
         {
+            hitPoint = other.transform.position;
+           
+            Instantiate(bloodEffectVFX, hitPoint, other.transform.rotation);
+
+            bloodEffectVFX.Play();
             LightDamage();
         }
 
         if (other.transform.tag == "Enemy" && isHeavyDamage)
         {
+            hitPoint = other.transform.position;
+            Instantiate(bloodEffectPrefab, hitPoint, other.transform.rotation);
+            bloodEffectVFX.Play();
             HeavyDamage();
         }
 

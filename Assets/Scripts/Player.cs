@@ -5,10 +5,7 @@ using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-
-    [SerializeField] private Rigidbody playerRb;
     public float speed = 2f;
-
 
     private float horizontalInput;
     private float verticalInput;
@@ -41,7 +38,7 @@ public class Player : MonoBehaviour
     bool isLightClicked = false;
     bool isHeavyClicked = false;
     bool isHealClicked = false;
-    
+    public bool isFallenDown = false;
 
     //ABSTRACTION
     void FreelookPlayerMovement()
@@ -99,12 +96,12 @@ public class Player : MonoBehaviour
 
     void FreeLookRun()//ABSTRACTION
     {
-        if (Input.GetKey("left shift") && !isLightClicked && !isHeavyClicked && !isHealClicked && (animationStateController.stamina > 12))
+        if (Input.GetKey("left shift") && !isFallenDown &&!isLightClicked && !isHeavyClicked && !isHealClicked && (animationStateController.stamina > 12))
         {
-            animationStateController.stamina -= 20 * Time.deltaTime;
+            animationStateController.stamina -= 15 * Time.deltaTime;
             speed = 5f;
         }
-        else if(!Input.GetKey("left shift") && !isLightClicked && !isHeavyClicked && !isHealClicked && (animationStateController.stamina > 11))
+        else if(!Input.GetKey("left shift") && !isFallenDown && !isLightClicked && !isHeavyClicked && !isHealClicked && (animationStateController.stamina > 11))
         {
             
             speed = 2f;
@@ -115,24 +112,23 @@ public class Player : MonoBehaviour
         }
 
     }
-
     void LockedOnRun()
     {
-        if (Input.GetKey("left shift") && !isLightClicked && !isHeavyClicked && !isHealClicked && (animationStateController.stamina > 3))
+        if (Input.GetKey("left shift") && !isFallenDown && !isLightClicked && !isHeavyClicked && !isHealClicked && (animationStateController.stamina > 3))
         {
-            animationStateController.stamina -= 12 * Time.deltaTime;
+            animationStateController.stamina -= 10 * Time.deltaTime;
             speed = 4f;
         }
-        else if (!Input.GetKey("left shift") && !isLightClicked && !isHeavyClicked && !isHealClicked)
+        else if (!Input.GetKey("left shift") && !isFallenDown && !isLightClicked && !isHeavyClicked && !isHealClicked)
         {
             speed = 2f;
         }
 
     }
-
     IEnumerator StopPlayerMovementLight()
     {
-        
+       if( animationStateController.stamina > 20)
+        {
             isLightClicked = true;
             speed = 0f;
             rotationSpeed = 1.20f;
@@ -141,12 +137,10 @@ public class Player : MonoBehaviour
             speed = 2f;
             rotationSpeed = 10f;
             isLightClicked = false;
+        }
+            
         
-        
-
     }
-
-
 
     IEnumerator StopPlayerMovementHeavy()
     {
@@ -179,15 +173,12 @@ public class Player : MonoBehaviour
 
     IEnumerator StopPlayerMovementDodge()
     {
-
-        
         speed = 1f;
         rotationSpeed = 3.20f;
         yield return new WaitForSeconds(1.20f);
 
         speed = 2f;
         rotationSpeed = 10f;
-        
 
     }
 
@@ -260,16 +251,10 @@ public class Player : MonoBehaviour
             // Call the appropriate movement method based on isLocked state
             if (isLocked)
             {
-                // enemyFocusPoint.enabled = true;
-
-                //turn on knob
                 LockedOnPlayerMovement();
             }
             else
             {
-                // enemyFocusPoint.enabled = false;
-
-                //turn off knob
                 FreelookPlayerMovement();
             }
         }

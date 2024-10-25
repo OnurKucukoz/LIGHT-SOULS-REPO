@@ -15,9 +15,9 @@ public class EnemyWeapon : MonoBehaviour
     public bool isHeavyDamage;
     public bool isComboDamage;
 
-    public int lightDamage = 10;
-    public int heavyDamage = 20;
-    public int comboDamage = 15;
+    public int lightDamage = 8;
+    public int heavyDamage = 15;
+    public int comboDamage = 12;
 
     public AudioSource enemyWeaponAudioSource;
    
@@ -27,8 +27,6 @@ public class EnemyWeapon : MonoBehaviour
     public AudioClip playerGetsLightHit;
     public AudioClip enemyCutsPlayerLightHit;
 
-
-    // Start is called before the first frame update
     void Start()
     {
         player = GameObject.Find("Player").GetComponent<PlayerCombat>();
@@ -48,7 +46,6 @@ public class EnemyWeapon : MonoBehaviour
             enemyWeaponAudioSource.pitch = Random.Range(0.8f, 1f);
             enemyWeaponAudioSource.PlayOneShot(enemyCutsPlayerLightHit);
             enemyWeaponAudioSource.PlayOneShot(playerGetsLightHit);
-            // set blood vfx
            
         }
     }
@@ -62,13 +59,21 @@ public class EnemyWeapon : MonoBehaviour
             animationStateController.cooldownTimer = 1.71f;
             player.currentHealth -= heavyDamage;
             StartCoroutine(StopRotationHeavy());
+            StartCoroutine(StopMovementHeavy());
             enemyWeaponAudioSource.pitch = 0.5f;
             enemyWeaponAudioSource.PlayOneShot(playerGetsHeavyHit);
-            enemyWeaponAudioSource.pitch = Random.Range(1f, 1.2f);
+            enemyWeaponAudioSource.pitch = Random.Range(0.8f, 1f);
             enemyWeaponAudioSource.PlayOneShot(heavyHitClip);
             
-            // set blood vfx
         }
+
+    }
+    IEnumerator StopMovementHeavy()
+    {
+        thePlayer.speed = 0;
+        thePlayer.isFallenDown = true;
+        yield return new WaitForSeconds(1.51f);
+        thePlayer.isFallenDown = false;
 
     }
     public void ComboDamage()
@@ -81,12 +86,9 @@ public class EnemyWeapon : MonoBehaviour
             animationStateController.cooldownTimer = 0.41f;
             player.currentHealth -= comboDamage;
             StartCoroutine(StopRotationLight());
-            enemyWeaponAudioSource.pitch = Random.Range(1f, 1.2f);
+            enemyWeaponAudioSource.pitch = Random.Range(0.8f, 1f);
             enemyWeaponAudioSource.PlayOneShot(enemyCutsPlayerLightHit);
             enemyWeaponAudioSource.PlayOneShot(playerGetsLightHit);
-
-            // set blood vfx
-            // set hit noise
 
         }
 
@@ -108,29 +110,37 @@ public class EnemyWeapon : MonoBehaviour
 
     }
 
+    public GameObject bloodEffectPrefab;
+    public ParticleSystem bloodEffectVFX;
+    public Vector3 hitPoint;
     public void OnTriggerEnter(Collider other)
     {
         isTriggered = true;
 
         if (other.transform.tag == "Player" && isLightDamage)
         {
-            
+            hitPoint = other.transform.position;          
+            Instantiate(bloodEffectVFX, hitPoint, other.transform.rotation);   
+            bloodEffectVFX.Play();
             LightDamage();
 
         }
 
         if (other.transform.tag == "Player" && isHeavyDamage)
         {
-
+            hitPoint = other.transform.position;
+            Instantiate(bloodEffectVFX, hitPoint, other.transform.rotation);
+            bloodEffectVFX.Play();
             HeavyDamage();
 
         }
 
         if (other.transform.tag == "Player" && isComboDamage)
         {
-            
+            hitPoint = other.transform.position;
+            Instantiate(bloodEffectVFX, hitPoint, other.transform.rotation);            
+            bloodEffectVFX.Play();
             ComboDamage();
-
         }
 
         animationStateController.canHeavy = false;

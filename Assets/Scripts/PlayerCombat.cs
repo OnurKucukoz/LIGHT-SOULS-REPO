@@ -46,7 +46,7 @@ public class PlayerCombat : MonoBehaviour, IHasHealth
     }
     public void HealUp()
     {
-        currentHealth += 30;
+        currentHealth += 60;
         currentHealth = Math.Min(currentHealth, 100);
     }
 
