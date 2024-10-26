@@ -15,5 +15,4 @@ Challenging Boss: Face a powerful enemy with unique attacks, from ground-shatter
 Arena Battle: Engage in a one-on-one duel, focusing purely on the art of combat.
 Getting Started
 Clone the repository, open it in Unity, and play the game or you can just play it from the link here:
-https://play.unity.com/en/games/6604b770-66f1-4f77-845a-73f23d2a913d/webgl-build<br>
 https://onurkucukoz.itch.io/light-souls
