@@ -5,5 +5,5 @@ Realistic Combat Mechanics: Experience combat mechanics that require precision, 
 Challenging Boss: Face a powerful enemy with unique attacks, from ground-shattering strikes to projectile ice barrages.
 Arena Battle: Engage in a one-on-one duel, focusing purely on the art of combat.
 Getting Started
-Clone the repository, open it in Unity, and play the game or you can just play it from the link here:
+Clone the repository, open it in Unity, and play the game or you can just play it from the link here:<br>
 https://onurkucukoz.itch.io/light-souls
