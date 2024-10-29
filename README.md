@@ -1,6 +1,6 @@
 Immerse yourself in a challenging boss fight in this Dark Souls-inspired game, where skillful combat and strategic dodging are essential to survival. Step into the arena, face a formidable boss, and test your abilities against relentless attacks in a dynamic, atmospheric environment.
 
-Key Features
+Key Features <br>
 Realistic Combat Mechanics: Experience combat mechanics that require precision, timing, and strategy.
 Challenging Boss: Face a powerful enemy with unique attacks, from ground-shattering strikes to projectile ice barrages.
 Arena Battle: Engage in a one-on-one duel, focusing purely on the art of combat.
