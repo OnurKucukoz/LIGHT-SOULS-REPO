@@ -230,7 +230,7 @@ public class AnimationStateController : MonoBehaviour
                 {
                     stamina -= 10;
                     StartCoroutine(StaminaCostingNow());
-                    cooldownTimer = 1.30f;
+                    cooldownTimer = 0.8f;
                     FreeLookLightAttack();
 
                 }
@@ -245,7 +245,7 @@ public class AnimationStateController : MonoBehaviour
                 {
                     stamina -= 20;
                     StartCoroutine(StaminaCostingNow());
-                    cooldownTimer = 2.2f;
+                    cooldownTimer = 1.5f;
                     FreeLookHeavyAttack();
 
                 }
@@ -259,7 +259,7 @@ public class AnimationStateController : MonoBehaviour
                 {
                     stamina -= 5;
                     StartCoroutine(StaminaCostingNow());
-                    cooldownTimer = 1.30f;
+                    cooldownTimer = 0.5f;
                     LightAttackComboTwo();
                     DisableCombo();
 
@@ -272,7 +272,7 @@ public class AnimationStateController : MonoBehaviour
                 {
                     stamina -= 7;
                     StartCoroutine(StaminaCostingNow());
-                    cooldownTimer = 1.37f;
+                    cooldownTimer = 1.27f;
                     FreeLookDodge();
                 }
             }
@@ -283,7 +283,7 @@ public class AnimationStateController : MonoBehaviour
                 {
                     stamina -= 7;
                     StartCoroutine(StaminaCostingNow());
-                    cooldownTimer = 1.37f;
+                    cooldownTimer = 1.27f;
                     LockedOnForwardDodge();
                 }
             }
@@ -295,7 +295,7 @@ public class AnimationStateController : MonoBehaviour
                 {
                     stamina -= 7;
                     StartCoroutine(StaminaCostingNow());
-                    cooldownTimer = 1.37f;
+                    cooldownTimer = 1.27f;
                     LockedOnLeftDodge();
                 }
             }
@@ -306,7 +306,7 @@ public class AnimationStateController : MonoBehaviour
                 {
                     stamina -= 7;
                     StartCoroutine(StaminaCostingNow());
-                    cooldownTimer = 1.37f;
+                    cooldownTimer = 1.27f;
                     LockedOnRightDodge();
                 }
             }
@@ -317,7 +317,7 @@ public class AnimationStateController : MonoBehaviour
                 {
                     stamina -= 7;
                     StartCoroutine(StaminaCostingNow());
-                    cooldownTimer = 1.37f;
+                    cooldownTimer = 1.27f;
                     LockedOnBackwardDodge();
                 }
             }
@@ -329,7 +329,7 @@ public class AnimationStateController : MonoBehaviour
                 {
                     stamina -= 7;
                     StartCoroutine(StaminaCostingNow());
-                    cooldownTimer = 1.37f;
+                    cooldownTimer = 1.27f;
                     LockedOnBackwardRightDiagonalRolling();
                 }
             }
@@ -341,7 +341,7 @@ public class AnimationStateController : MonoBehaviour
                 {
                     stamina -= 7;
                     StartCoroutine(StaminaCostingNow());
-                    cooldownTimer = 1.37f;
+                    cooldownTimer = 1.27f;
                     LockedOnBackwardLeftDiagonalRolling();
                 }
             }
@@ -353,7 +353,7 @@ public class AnimationStateController : MonoBehaviour
                 {
                     stamina -= 7;
                     StartCoroutine(StaminaCostingNow());
-                    cooldownTimer = 1.37f;
+                    cooldownTimer = 1.27f;
                     LockedOnForwardLeftDiagonalRolling();
                 }
             }
@@ -364,7 +364,7 @@ public class AnimationStateController : MonoBehaviour
                 {
                     stamina -= 7;
                     StartCoroutine(StaminaCostingNow());
-                    cooldownTimer = 1.37f;
+                    cooldownTimer = 1.27f;
                     LockedOnForwardRightDiagonalRolling();
                 }
             }
