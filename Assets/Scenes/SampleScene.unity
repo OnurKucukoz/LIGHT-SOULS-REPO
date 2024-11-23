@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.08289432, g: 0.16840401, b: 0.17236233, a: 1}
+  m_IndirectSpecularColor: {r: 0.08436961, g: 0.16993654, b: 0.17277548, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4898,7 +4898,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 316118789}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.033540472, y: -0.0019668178, z: -0.000065965, w: 0.9994354}
+  m_LocalRotation: {x: -0.033540476, y: -0.0019668096, z: -0.000065964734, w: 0.9994354}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4977,7 +4977,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 351673367}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.05171414, y: -0.001965287, z: -0.0001017292, w: 0.99866}
+  m_LocalRotation: {x: -0.05171414, y: -0.0019652913, z: -0.00010172943, w: 0.99866}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -7970,7 +7970,7 @@ Camera:
     height: 1
   near clip plane: 0.1
   far clip plane: 5000
-  field of view: 40
+  field of view: 29.01
   orthographic: 0
   orthographic size: 10
   m_Depth: -1
@@ -7996,8 +7996,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.069822796, y: -0.0019630843, z: -0.00013740364, w: 0.9975575}
-  m_LocalPosition: {x: 29.625006, y: 0.73417044, z: -96.953285}
+  m_LocalRotation: {x: 0.0058531677, y: 0.009675897, z: -0.000056638262, w: 0.99993604}
+  m_LocalPosition: {x: 29.50081, y: 1.7780883, z: -96.92086}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11044,7 +11044,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: You Died
+  m_text: YOU DIED
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
